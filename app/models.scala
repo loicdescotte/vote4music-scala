@@ -16,10 +16,6 @@ class Album(
              var hasCove: Boolean = false)
   extends Model {
 
-  /*
-  def this(name:String)={
-    this(name,null,null,null,0L,false);
-  } */
 
   /*
    * Remove duplicate artist
@@ -32,13 +28,13 @@ class Album(
       artist = existingArtists.get(0)
     }
   }
-
 }
-
 
 class Artist(
 @Required @Column(unique = true) var name:String) extends Model {
-      def findByName(name:String) = {
+  private var test = "test"
+  def findByName(name:String) = {
+        test=test+"2"
         find("byName", name).fetch();
     }
 }
@@ -48,3 +44,4 @@ final case object ROCK extends Genre
 final case object METAL extends Genre
 final case object POP extends Genre
 
+object Albums extends QueryOn[Album]
