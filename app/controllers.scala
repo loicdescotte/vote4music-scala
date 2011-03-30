@@ -20,6 +20,16 @@ object Application extends Controller {
     // findByGenreAndYear(genre, year), "genre" -> genre, "year" -> year)
   }
 
+    def getYearsToDisplay(): Array[String]={
+        /*
+        for (int i = Album.getFirstAlbumYear(); i <= Album.getLastAlbumYear(); i++) {
+            years.add(String.valueOf(i));
+        }
+        Collections.reverse(years);
+        */
+        Array("2010","2011")
+    }
+
 }
 
 object Admin extends Controller /*with Secure*/{

@@ -2,7 +2,6 @@ package models
 
 import java.util._
 import play.db.jpa._
-import play.db.jpa.Model
 import play.data.validation.Required
 import javax.persistence.{EnumType, TemporalType, CascadeType}
 
