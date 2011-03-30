@@ -1,5 +1,6 @@
 package controllers
 
+import models.Albums
 import play._
 import play.mvc._
 import templates.Template
@@ -9,11 +10,14 @@ object Application extends Controller {
   def index = Template
 
   def list(filter: String) = {
-    Template("albums" -> Albums.findAll(filter))
+    //TODO
+    Template("albums" -> Albums.findAll(/*filter*/))
   }
 
   def listByGenreAndYear (genre: String, year:String) = {
-    Template("albums" -> Albums.findByGenreAndYear(genre, year), "genre" -> genre, "year" -> year)
+    Template("albums" -> Albums.findAll())
+    //TODO
+    // findByGenreAndYear(genre, year), "genre" -> genre, "year" -> year)
   }
 
 }
@@ -24,21 +28,22 @@ object Admin extends Controller /*with Secure*/{
    * Log in
    */
   def login() = {
-    render("@Application.list")
-    //Template("@Application.list")
+    Template("@Application.list")
   }
 
-  @Check("admin")
+  //@Check("admin")
   def delete(id: Long) = {
     val album = Albums.findById(id)
-    album.delete()
-    render("@Application.list")
+    //TODO
+    //Albums.delete()
+    Template("@Application.list")
   }
 
-  @Check("admin")
+  //@Check("admin")
   def update(id: Long) = {
     val album = Albums.findById(id)
-    render("@Application.form", album)
+    //TODO
+    //Template("@Application.form", album)
   }
 }
 /*
