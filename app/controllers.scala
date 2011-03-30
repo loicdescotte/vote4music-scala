@@ -24,17 +24,18 @@ object Admin extends Controller /*with Secure*/{
    * Log in
    */
   def login() = {
-    Application.list(null)
+    render("@Application.list")
+    //Template("@Application.list")
   }
 
-  //@Check("admin")
+  @Check("admin")
   def delete(id: Long) = {
     val album = Albums.findById(id)
     album.delete()
-    Application.list(null)
+    render("@Application.list")
   }
 
-  //@Check("admin")
+  @Check("admin")
   def update(id: Long) = {
     val album = Albums.findById(id)
     render("@Application.form", album)
