@@ -7,22 +7,20 @@ import play.data.validation.Required
 import javax.persistence.{EnumType, TemporalType, CascadeType}
 
 class Album(
-             @Required var name: String,
-             @ManyToOne(cascade = { CascadeType.PERSIST}) var artist: Artist,
-             @Temporal(TemporalType.DATE) @Required var releaseDate: Date,
-             @Enumerated(EnumType.STRING)
-             var genre : Genre,
+             @Required name: String,
+             @ManyToOne(cascade = { CascadeType.PERSIST}) artist: Artist,
+             @Temporal(TemporalType.DATE) @Required releaseDate: Date,
+             @Enumerated(EnumType.STRING) genre : Genre,
              var nbVotes: Long = OL,
              var hasCove: Boolean = false)
   extends Model {
-
 
   /*
    * Remove duplicate artist
      * @return found duplicate artist if exists
      */
   def replaceDuplicateArtist = {
-    def existingArtists: Artist = Artist.findByName(artist.name)
+    def existingArtists: Artist = Artists.findByName(artist.name)
     if (existingArtists.size() > 0) {
       //Artist name is unique
       artist = existingArtists.get(0)
@@ -31,10 +29,8 @@ class Album(
 }
 
 class Artist(
-@Required @Column(unique = true) var name:String) extends Model {
-  private var test = "test"
+@Required @Column(unique = true) name:String) extends Model{
   def findByName(name:String) = {
-        test=test+"2"
         find("byName", name).fetch();
     }
 }
@@ -45,3 +41,4 @@ final case object METAL extends Genre
 final case object POP extends Genre
 
 object Albums extends QueryOn[Album]
+object Artists extends QueryOn[Artist]
