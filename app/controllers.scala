@@ -32,7 +32,7 @@ object Application extends Controller {
 
 }
 
-object Admin extends Controller /*with Secure*/{
+object Admin extends Controller with Secure {
 
   /**
    * Log in
@@ -54,15 +54,58 @@ object Admin extends Controller /*with Secure*/{
     //Template("@Application.form", album)
   }
 }
-/*
-trait Secure {
-  self: Controller =>
-  @Before
-  def check =
-    session("user") match {
-      case name: String => info ("Logged as %s", name)
-      _ => Security.login
-      }
-  }
 
-*/
+
+//Security
+trait Secure extends Controller {
+
+    @Before def check = {        
+        session("user") match {
+            case Some(email) => info(email + "logged")
+            case None => Action(Authentication.login)
+        }
+    }
+
+    //TODO
+    //@Util def connectedUser = renderArgs.get("user").asInstanceOf[User]
+
+}
+
+trait AdminOnly extends Secure {
+
+    @Before def checkAdmin = {
+        //if(!connectedUser.isAdmin) Forbidden else Continue
+        Continue
+    }
+
+}
+
+object Authentication extends Controller {
+
+    def login = Template
+
+    def authenticate(username: String, password: String) = {
+        /*
+        Users.connect(username, password) match {
+            case Some(u) => session.put("user", u.email)
+                            Action(Admin.index)
+
+            case None    => flash.error("Oops, bad email or password")
+                            flash.put("username", username)
+                            Action(login)
+                            }
+                            */
+        
+        //session.put("user", u.email)
+        session.put("user", "admin@mail.com")
+        Action(Application.index)
+    }
+
+    def logout = {
+        session.clear()
+        flash.success("You have been disconnected")
+        //Action(login)
+    }
+
+}
+
