@@ -43,9 +43,7 @@ object Admin extends Controller /*with Secure*/{
 
   //@Check("admin")
   def delete(id: Long) = {
-    val album = Albums.findById(id)
-    //TODO
-    //Albums.delete()
+    for (n <- Albums.findById(id)) n.delete
     Template("@Application.list")
   }
 

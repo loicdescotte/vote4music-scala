@@ -36,7 +36,8 @@ class Artist(
 
 
 
-trait Genre /* {
+/*
+trait Genre  {
 
   final case object ROCK extends Genre
 
@@ -44,7 +45,7 @@ trait Genre /* {
 
   final case object POP extends Genre
 
-}                    */
+} */                   
 
 object Albums extends QueryOn[Album]
 
