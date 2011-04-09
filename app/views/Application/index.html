@@ -18,7 +18,7 @@
 <br/>
 <label for="genre">Genre:</label>
 <select id ="genre" name="genre">
-    #{list models.Genre.values(), as:'genre'}
+    #{list models.Genres.values(), as:'genre'}
     <option  value="${genre}">${genre.toString().toLowerCase()}</option>
     #{/list}
 </select>

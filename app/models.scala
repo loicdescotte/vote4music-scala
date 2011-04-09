@@ -1,17 +1,19 @@
 package models
 
 import java.util._
-import play.db.jpa._
+import javax.persistence._
+import play.db.jpa.Model
+import play.db.jpa.QueryOn
 import play.data.validation.Required
 import javax.persistence.{EnumType, TemporalType, CascadeType}
 
+
 class Album(
              @Required name: String,
-             @ManyToOne/*(cascade = {
-               CascadeType.PERSIST
-             })*/ var artist: Artist,
+             @ManyToOne(cascade = Array(CascadeType.PERSIST, CascadeType.MERGE))
+             var artist: Artist,
              @Temporal(TemporalType.DATE) @Required var releaseDate: Date,
-             @Enumerated(EnumType.STRING) var genre: Genre,
+             var genre: String,
              var nbVotes: Long = 0L,
              var hasCove: Boolean = false)
   extends Model {
@@ -35,17 +37,10 @@ class Artist(
 }
 
 
+object Genres {
+  def values() = Array("ROCK","POP","BLUES","JAZZ", "HIP-HOP", "WORLD","OTHER")
+}
 
-/*
-trait Genre  {
-
-  final case object ROCK extends Genre
-
-  final case object METAL extends Genre
-
-  final case object POP extends Genre
-
-} */                   
 
 object Albums extends QueryOn[Album]
 
