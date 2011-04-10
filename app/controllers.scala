@@ -4,7 +4,6 @@ import models.Albums
 import play._
 import play.mvc._
 import templates.Template
-import java.security.Security
 
 object Application extends Controller {
   def index = Template
@@ -14,21 +13,20 @@ object Application extends Controller {
     Template("albums" -> Albums.findAll(/*filter*/))
   }
 
-  def listByGenreAndYear (genre: String, year:String) = {
-    Template("albums" -> Albums.findAll())
-    //TODO
-    // findByGenreAndYear(genre, year), "genre" -> genre, "year" -> year)
+  def listByGenreAndYear(genre: String, year: String) = {
+    Template("albums" -> Albums.findByGenreAndYear(genre, year))
   }
 
-    def getYearsToDisplay(): Array[String]={
-        /*
-        for (int i = Album.getFirstAlbumYear(); i <= Album.getLastAlbumYear(); i++) {
-            years.add(String.valueOf(i));
-        }
-        Collections.reverse(years);
-        */
-        Array("2010","2011")
-    }
+  def getYearsToDisplay(): List[Int] = {
+    var years: List[Int] = List()
+    val first = Albums.getFirstAlbumYear()
+    val last = Albums.getLastAlbumYear()
+    //TODO try to avoid the loop
+    first.until(last).foreach(
+      e => years = years.:+(e)
+    )
+    return years
+  }
 
 }
 
@@ -59,53 +57,53 @@ object Admin extends Controller with Secure {
 //Security
 trait Secure extends Controller {
 
-    @Before def check = {        
-        session("user") match {
-            case Some(email) => info(email + "logged")
-            case None => Action(Authentication.login)
-        }
+  @Before def check = {
+    session("user") match {
+      case Some(email) => info(email + "logged")
+      case None => Action(Authentication.login)
     }
+  }
 
-    //TODO
-    //@Util def connectedUser = renderArgs.get("user").asInstanceOf[User]
+  //TODO
+  //@Util def connectedUser = renderArgs.get("user").asInstanceOf[User]
 
 }
 
 trait AdminOnly extends Secure {
 
-    @Before def checkAdmin = {
-        //if(!connectedUser.isAdmin) Forbidden else Continue
-        Continue
-    }
+  @Before def checkAdmin = {
+    //if(!connectedUser.isAdmin) Forbidden else Continue
+    Continue
+  }
 
 }
 
 object Authentication extends Controller {
 
-    def login = Template
+  def login = Template
 
-    def authenticate(username: String, password: String) = {
-        /*
-        Users.connect(username, password) match {
-            case Some(u) => session.put("user", u.email)
-                            Action(Admin.index)
+  def authenticate(username: String, password: String) = {
+    /*
+Users.connect(username, password) match {
+case Some(u) => session.put("user", u.email)
+    Action(Admin.index)
 
-            case None    => flash.error("Oops, bad email or password")
-                            flash.put("username", username)
-                            Action(login)
-                            }
-                            */
-        
-        //session.put("user", u.email)
-        session.put("user", "admin@mail.com")
-        Action(Application.index)
+case None    => flash.error("Oops, bad email or password")
+    flash.put("username", username)
+    Action(login)
     }
+    */
 
-    def logout = {
-        session.clear()
-        flash.success("You have been disconnected")
-        //Action(login)
-    }
+    //session.put("user", u.email)
+    session.put("user", "admin@mail.com")
+    Action(Application.index)
+  }
+
+  def logout = {
+    session.clear()
+    flash.success("You have been disconnected")
+    //Action(login)
+  }
 
 }
 
