@@ -18,17 +18,11 @@ object Application extends Controller {
   }
 
   def getYearsToDisplay(): List[Int] = {
-    var years: List[Int] = List()
     val first = Albums.getFirstAlbumYear()
     val last = Albums.getLastAlbumYear()
-    //TODO try to avoid the loop
-    first.until(last).foreach(
-      e => years = years.:+(e)
-    )
-    return years
+    first.to(last).toList
   }
 
-}
 
 }
 
