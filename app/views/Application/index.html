@@ -11,7 +11,7 @@
 #{form @listByGenreAndYear()}
 <label for="year">Release Year</label>
 <select id="year" name="year">
-    #{list controllers.Application.getYearsToDisplay(), as:'year'}
+    #{list controllers.Application.yearsToDisplay(), as:'year'}
     <option  value="${year}">${year}</option>
     #{/list}
 </select>

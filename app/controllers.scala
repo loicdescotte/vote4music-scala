@@ -17,10 +17,10 @@ object Application extends Controller {
     Template("albums" -> Albums.findByGenreAndYear(genre, year))
   }
 
-  def getYearsToDisplay(): List[Int] = {
-    val first = Albums.getFirstAlbumYear()
-    val last = Albums.getLastAlbumYear()
-    first.to(last).toList
+  def yearsToDisplay(): List[Int] = {
+    val first = Albums.firstAlbumYear()
+    val last = Albums.lastAlbumYear()
+    first.to(last).toList.reverse
   }
 
 

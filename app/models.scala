@@ -52,18 +52,18 @@ object Albums extends QueryOn[Album] {
 
   def em() = JPA.em()
 
-  def getFirstAlbumYear(): Int = {
+  def firstAlbumYear(): Int = {
     def resultDate = em().createQuery("select min(a.releaseDate) from Album a").getSingleResult().asInstanceOf[Date]
     if (resultDate != null)
-      return formatYear.format(resultDate).toInt;
+      return formatYear.format(resultDate).toInt
     else return 1990;
   }
 
-  def getLastAlbumYear(): Int = {
+  def lastAlbumYear(): Int = {
     def resultDate = em().createQuery("select min(a.releaseDate) from Album a").getSingleResult().asInstanceOf[Date]
     if (resultDate != null)
-      return formatYear.format(resultDate).toInt;
-    else return formatYear.format(new Date()).toInt;
+      return formatYear.format(resultDate).toInt
+    else return formatYear.format(new Date()).toInt
   }
 
   def findByGenreAndYear(genre: String, year: String) {
@@ -71,7 +71,7 @@ object Albums extends QueryOn[Album] {
     //filter with Scala collections example
     albums = albums.filter(x => formatYear.format(x.releaseDate).equals(year))
     //sort by popularity
-    albums.sortBy(_.nbVotes)
+    albums.sortBy(_.nbVotes).reverse
   }
 }
 
