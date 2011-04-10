@@ -12,7 +12,6 @@ POST    /album                                                  Application.save
 GET     /albums                                                 Application.list
 GET     /topalbums                                              Application.listByGenreAndYear
 GET     /album/new                                              Application.form
-GET     /album/{id}                                             Admin.form
 POST	/api/album                                              Application.saveAlbumJson
 
 #Vote
