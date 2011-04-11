@@ -46,7 +46,6 @@ class Artist(@Required @Column(unique = true) var name: String) extends Model {
 
 }
 
-
 object Genres {
   def values() = Array("ROCK", "POP", "BLUES", "JAZZ", "HIP-HOP", "WORLD", "OTHER")
 }
@@ -55,7 +54,6 @@ object Genres {
 object Albums extends QueryOn[Album] {
 
   private val formatYear: SimpleDateFormat = new SimpleDateFormat("yyyy");
-
   def em() = JPA.em()
 
 

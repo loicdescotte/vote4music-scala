@@ -1,10 +1,10 @@
 package controllers
 
+import _root_.models.{Album, Artist, Albums}
 import play._
-import data.validation.{Valid, Validation}
+import play.data.validation.{Valid, Validation}
 import play.mvc._
 import templates.Template
-import models.{Artist, Album, Albums}
 import java.io.File
 
 object Application extends Controller {
@@ -40,9 +40,12 @@ object Application extends Controller {
    * @param artist
    * @param cover
    */
-  def save(@Valid album: Album, @Valid artist: Artist, cover: File) {
+  def save(@Valid album: Album, @Valid artist: Artist, cover: File) = {
     //forward if error
-    if (Validation.hasErrors) Action(form())
+    if (Validation.hasErrors) {
+      //TODO does not work
+      Action(form)
+    }
     album.artist = artist
     album.replaceDuplicateArtist
     album.save
@@ -64,6 +67,18 @@ object Application extends Controller {
    def form() = {
       Template
    }
+
+  /**
+   * vote for an album
+   * @param id
+   */
+  def vote(id: String) = {
+    //TODO try to use findById
+    val album = Albums.find("id",id.toLong).fetch().apply(0)
+    album.vote
+    println("votes " + album.nbVotes)
+    album.nbVotes
+  }
 
 
 

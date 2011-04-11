@@ -20,7 +20,7 @@
 <p class="field">
     <label for="genre">Genre:</label>
     <select id="genre" name="album.genre">
-        #{list models.Genre.values(), as:'genre'}
+        #{list models.Genres.values(), as:'genre'}
         #{if album?.genre == genre}
         <option  value="${genre}" selected="selected">${genre.toString().toLowerCase()}</option>
         #{/if}

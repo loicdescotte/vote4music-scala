@@ -42,7 +42,7 @@
             <span class="cover"><a href="#">Show cover</a></span>
             #{/if}
         </td>
-        <td>${album.releaseDate.format('yyyy-MM-dd')}</td>
+        <td>${album.releaseDate?.format('yyyy-MM-dd')}</td>
         <td>${album.genre.toString()}</td>
         <td>
             <span id="nbVotes${album.id}">${album.nbVotes}</span>
