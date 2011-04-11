@@ -2,6 +2,6 @@
      
 require:
     - play
-    - play -> html5validation 1.2
+#    - play -> html5validation 1.2
 #    - play -> secure
     - play -> scala

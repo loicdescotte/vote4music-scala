@@ -1,7 +1,6 @@
 package models
 
-import _root_.models.Artists
-import java.util._
+import java.util.Date
 import javax.persistence._
 import play.db.jpa.Model
 import play.db.jpa.QueryOn
@@ -13,7 +12,7 @@ import java.text.SimpleDateFormat
 
 @Entity
 class Album(
-             @Required name: String,
+             @Required var name: String,
              @ManyToOne(cascade = Array(CascadeType.PERSIST, CascadeType.MERGE))
              var artist: Artist,
              @Temporal(TemporalType.DATE) @Required var releaseDate: Date,
@@ -33,6 +32,13 @@ class Album(
     artist = existingArtists.apply(0)
   }
 
+  /**
+   * Vote for an album
+   */
+  def vote() = {
+   nbVotes +=1
+   save
+  }
 }
 
 @Entity
@@ -52,6 +58,25 @@ object Albums extends QueryOn[Album] {
 
   def em() = JPA.em()
 
+
+  /**
+   * @param filter
+   * @return found albums
+   */
+  def findAll(filter: String): List[Album] = {
+    var albums: List[Album] = null
+    if (filter != null) {
+      val likeFilter = "%".concat(filter).concat("%")
+      albums = find("select a from Album a where a.name like ? or a.artist.name like ?", likeFilter, likeFilter).fetch
+    }
+    else albums = Albums.find("from Album").fetch(100)
+    //TODO in private method for reuse
+    albums.sortBy(_.nbVotes).reverse
+  }
+
+  /**
+   *  first album year
+   */
   def firstAlbumYear(): Int = {
     def resultDate = em().createQuery("select min(a.releaseDate) from Album a").getSingleResult().asInstanceOf[Date]
     if (resultDate != null)
@@ -59,6 +84,9 @@ object Albums extends QueryOn[Album] {
     else return 1990;
   }
 
+  /**
+   * last album year
+   */
   def lastAlbumYear(): Int = {
     def resultDate = em().createQuery("select min(a.releaseDate) from Album a").getSingleResult().asInstanceOf[Date]
     if (resultDate != null)
@@ -66,13 +94,17 @@ object Albums extends QueryOn[Album] {
     else return formatYear.format(new Date()).toInt
   }
 
-  def findByGenreAndYear(genre: String, year: String) {
+  /**
+   *  find albums by genre and year
+   */
+  def findByGenreAndYear(genre: String, year: String) :  List[Album] = {
     var albums = Albums.find("byGenre", genre.toUpperCase()).fetch()
     //filter with Scala collections example
     albums = albums.filter(x => formatYear.format(x.releaseDate).equals(year))
     //sort by popularity
     albums.sortBy(_.nbVotes).reverse
   }
+
 }
 
 //Query object for artists

@@ -9,12 +9,12 @@
 
 <p class="field">
     <label for="name">Album Name:</label>
-   #{input for:'album.name', type:'text', id:'name' /}
+    <input type="text" name="album.name"  id="name" value="${album?.name}"/>
     <span class="error">${errors.forKey('album.name')}</span>
 </p>
 <p class="field">
     <label for="artist">Artist:</label>
-    #{input for:'artist.name', type:'text', id:'artist', value:album?.artist?.name /}
+    <input type="text" name="artist.name"  id="artist" value="${album?.artist?.name}"/>
     <span class="error">${errors.forKey('artist.name')}</span>
 </p>
 <p class="field">
@@ -33,7 +33,7 @@
 </p>
 <p class="field">
     <label for="release-date">Release date</label>
-    #{input for:'album.releaseDate', type:'text', id:'release-date', value:album?.releaseDate?.format('yyyy-MM-dd') /}
+    <input type="text" name="album.releaseDate"  id="release-date" value="${album?.releaseDate?.format('yyyy-MM-dd')}"/>
     <span class="error">${errors.forKey('album.releaseDate')}</span>
 </p>
 <p class="field">

@@ -14,8 +14,7 @@ object Application extends Controller {
    * Album list
    */
   def list(filter: String) = {
-    //TODO
-    Template("albums" -> Albums.findAll(/*filter*/))
+    Template("albums" -> Albums.findAll(filter))
   }
 
   /**
@@ -41,10 +40,9 @@ object Application extends Controller {
    * @param artist
    * @param cover
    */
-  def save(@Valid album: Album, @Valid artist: Artist, cover: File): Unit = {
-    if (Validation.hasErrors) {
-      Template("@form", album)
-    }
+  def save(@Valid album: Album, @Valid artist: Artist, cover: File) {
+    //forward if error
+    if (Validation.hasErrors) Action(form())
     album.artist = artist
     album.replaceDuplicateArtist
     album.save
@@ -56,7 +54,8 @@ object Application extends Controller {
       cover.renameTo(newFile)
       album.save
     }
-    list(null)
+    //forward to list action
+    Action(list(null))
   }
 
   /**
