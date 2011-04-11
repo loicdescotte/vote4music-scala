@@ -21,7 +21,7 @@ object Application extends Controller {
    * list albums by genre and year
    */
   def listByGenreAndYear(genre: String, year: String) = {
-    Template("albums" -> Albums.findByGenreAndYear(genre, year))
+    Template("albums" -> Albums.findByGenreAndYear(genre, year), "genre" -> genre, "year" -> year)
   }
 
   /**
