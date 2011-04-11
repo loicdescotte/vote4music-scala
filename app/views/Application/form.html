@@ -2,6 +2,8 @@
 #{set title:'Album form' /}
 
 <h1>Please write information about your favorite album</h1>
+
+
 #{form @Application.save(), method:'POST', enctype:'multipart/form-data'}
 <input type="hidden" name="album.id" value="${album?.id}"/>
 
@@ -55,7 +57,7 @@
 
   $(function(){
     // those stuff needs to be wrapped in a dom-ready callback. (same as $(document).ready)
-    $("#release-date").datepicker({dateFormat:'yy-mm-dd', showAnim:'fadeIn'});    
+    $("#release-date").datepicker({dateFormat:'yy-mm-dd', showAnim:'fadeIn'});
   });
 </script>
 #{/set}

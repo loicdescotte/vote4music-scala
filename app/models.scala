@@ -19,7 +19,7 @@ class Album(
              @Temporal(TemporalType.DATE) @Required var releaseDate: Date,
              var genre: String,
              var nbVotes: Long = 0L,
-             var hasCove: Boolean = false)
+             var hasCover: Boolean = false)
   extends Model {
 
   /*
@@ -30,7 +30,7 @@ class Album(
     val existingArtists = Artists.find("byName", artist.name).fetch()
     if (existingArtists.size > 0)
     //Artist name is unique
-      artist = existingArtists.apply(0)
+    artist = existingArtists.apply(0)
   }
 
 }
