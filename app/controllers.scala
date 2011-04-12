@@ -64,22 +64,25 @@ object Application extends Controller {
   /**
    * Just display the form
    */
-   def form() = {
-      Template
-   }
+  def form() = {
+    Template
+  }
 
   /**
    * vote for an album
    * @param id
    */
   def vote(id: String) = {
-    //TODO try to use findById
-    val album = Albums.find("id",id.toLong).fetch().apply(0)
-    album.vote
-    println("votes " + album.nbVotes)
-    album.nbVotes
-  }
+    val result = Albums.findById(id.toLong)
+    result match {
+      case None => 0
+      case Some(album) => {
+        album.vote
+        album.nbVotes
+      }
+    }
 
+  }
 
 
 }
