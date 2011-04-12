@@ -163,7 +163,7 @@ object Authentication extends Controller {
     Play.configuration.getProperty("application.admin").equals(username) &&
       Play.configuration.getProperty("application.adminpwd").equals(password) match {
       case true => session.put("username", username)
-      Action(Application.index)
+      Action(Application.list(null))
 
       case false => flash.error("Oops, bad email or password")
       flash.put("username", username)
