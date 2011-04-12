@@ -29,8 +29,8 @@ object Application extends Controller {
    * Years of albums releases
    */
   def yearsToDisplay: List[Int] = {
-    val first = Albums.firstAlbumYear()
-    val last = Albums.lastAlbumYear()
+    val first = Albums.firstAlbumYear
+    val last = Albums.lastAlbumYear
     first.to(last).toList.reverse
   }
 
@@ -65,7 +65,7 @@ object Application extends Controller {
   /**
    * Just display the form
    */
-  def form =Template
+  def form = Template
 
   /**
    * vote for an album
@@ -76,7 +76,7 @@ object Application extends Controller {
     result match {
       case None => 0
       case Some(album) => {
-        album.vote
+        album.vote()
         album.nbVotes
       }
     }
@@ -119,10 +119,11 @@ object Admin extends Controller with AdminOnly {
     result match {
       case Some(album) => {
         //TODO redirect to avoid template duplication
-        Template("album"->album)
+        Template("album" -> album)
       }
-  }
+    }
 
+  }
 }
 
 // Security
@@ -172,5 +173,5 @@ object Authentication extends Controller {
 
 }
 
-}
+
 

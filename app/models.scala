@@ -75,7 +75,7 @@ object Albums extends QueryOn[Album] {
   /**
    *  first album year
    */
-  def firstAlbumYear(): Int = {
+  def firstAlbumYear: Int = {
     def resultDate = em().createQuery("select min(a.releaseDate) from Album a").getSingleResult().asInstanceOf[Date]
     if (resultDate != null)
       return formatYear.format(resultDate).toInt
@@ -85,7 +85,7 @@ object Albums extends QueryOn[Album] {
   /**
    * last album year
    */
-  def lastAlbumYear(): Int = {
+  def lastAlbumYear: Int = {
     def resultDate = em().createQuery("select min(a.releaseDate) from Album a").getSingleResult().asInstanceOf[Date]
     if (resultDate != null)
       return formatYear.format(resultDate).toInt
