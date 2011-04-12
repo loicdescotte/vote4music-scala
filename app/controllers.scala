@@ -8,6 +8,7 @@ import templates.Template
 import java.io.File
 
 object Application extends Controller {
+
   def index = Template
 
   /**
@@ -27,7 +28,7 @@ object Application extends Controller {
   /**
    * Years of albums releases
    */
-  def yearsToDisplay(): List[Int] = {
+  def yearsToDisplay: List[Int] = {
     val first = Albums.firstAlbumYear()
     val last = Albums.lastAlbumYear()
     first.to(last).toList.reverse
@@ -64,9 +65,7 @@ object Application extends Controller {
   /**
    * Just display the form
    */
-  def form() = {
-    Template
-  }
+  def form =Template
 
   /**
    * vote for an album
@@ -84,6 +83,94 @@ object Application extends Controller {
 
   }
 
+  //TODO There is a bug in JSON serializer
+  def listByApi = Json("albums" -> Albums.findAll())
+
+}
+
+
+object Admin extends Controller with AdminOnly {
+
+  /**
+   * Log in
+   */
+  def login = {
+    Action(Application.list(null))
+  }
+
+  /**
+   * Delete album
+   * @param id
+   */
+  def delete(id: Long) = {
+    val result = Albums.findById(id)
+    result match {
+      case Some(album) => album.delete
+    }
+    Action(Application.list(null))
+  }
+
+  /**
+   * Update album
+   * @param id
+   */
+  def form(id: Long) = {
+    val result = Albums.findById(id.toLong)
+    result match {
+      case Some(album) => {
+        //TODO redirect to avoid template duplication
+        Template("album"->album)
+      }
+  }
+
+}
+
+// Security
+trait Secure extends Controller {
+
+  @Before def check = {
+    session("username") match {
+      case Some(username) => Continue
+      case None => Action(Authentication.login)
+    }
+  }
+
+  @Util def connectedUser = session.get("username").asInstanceOf[String]
+
+}
+
+trait AdminOnly extends Secure {
+
+  @Before def checkAdmin = {
+    if (!connectedUser.equals("admin")) Forbidden else Continue
+  }
+
+}
+
+object Authentication extends Controller {
+
+  def login = Template
+
+  def logout = {
+    session.clear()
+    flash.success("You have been disconnected")
+    Action(Admin.login)
+  }
+
+
+  def authenticate(username: String, password: String) = {
+    Play.configuration.getProperty("application.admin").equals(username) &&
+      Play.configuration.getProperty("application.adminpwd").equals(password) match {
+      case true => session.put("username", username)
+      Action(Application.index)
+
+      case false => flash.error("Oops, bad email or password")
+      flash.put("username", username)
+      Action(Admin.login)
+    }
+  }
+
+}
 
 }
 
