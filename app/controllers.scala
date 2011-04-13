@@ -4,6 +4,7 @@ import _root_.models.{Album, Artist, Albums}
 import play._
 import play.data.validation.{Valid, Validation}
 import play.mvc._
+import play.i18n.Messages
 import templates.Template
 import java.io.File
 
@@ -13,6 +14,13 @@ object Application extends Controller {
 
   /**
    * Album list
+   */
+  def list() = {
+    Template("albums" -> Albums.findAll())
+  }
+  
+  /**
+   * Album list with filter
    */
   def list(filter: String) = {
     Template("albums" -> Albums.findAll(filter))
@@ -59,7 +67,7 @@ object Application extends Controller {
       album.save
     }
     //forward to list action
-    Action(list(null))
+    Action(list())
   }
 
   /**
@@ -84,7 +92,7 @@ object Application extends Controller {
   }
 
   //TODO There is a bug in JSON serializer
-  def listByApi = Json("albums" -> Albums.findAll())
+  def listByApi = Json(Albums.findAll())
 
 }
 
@@ -95,7 +103,7 @@ object Admin extends Controller with AdminOnly {
    * Log in
    */
   def login = {
-    Action(Application.list(null))
+    Action(Application.list())
   }
 
   /**
@@ -106,8 +114,9 @@ object Admin extends Controller with AdminOnly {
     val result = Albums.findById(id)
     result match {
       case Some(album) => album.delete
+      case None => 
     }
-    Action(Application.list(null))
+    Action(Application.list())
   }
 
   /**
@@ -117,10 +126,11 @@ object Admin extends Controller with AdminOnly {
   def form(id: Long) = {
     val result = Albums.findById(id.toLong)
     result match {
-      case Some(album) => {
+      case Some(album) => 
         //TODO redirect to avoid template duplication
+        //This should work with next scala module version : Template("@Application.form", "album" -> album)
         Template("album" -> album)
-      }
+      case None => Template()
     }
 
   }
@@ -154,19 +164,16 @@ object Authentication extends Controller {
 
   def logout = {
     session.clear()
-    flash.success("You have been disconnected")
     Action(Admin.login)
   }
-
 
   def authenticate(username: String, password: String) = {
     Play.configuration.getProperty("application.admin").equals(username) &&
       Play.configuration.getProperty("application.adminpwd").equals(password) match {
       case true => session.put("username", username)
       Action(Application.index)
-
-      case false => flash.error("Oops, bad email or password")
-      flash.put("username", username)
+      //TODO flash is lost, use Template("Application.index") when it will be available
+      case false => flash.error(Messages.get("error.login"))      
       Action(Admin.login)
     }
   }
