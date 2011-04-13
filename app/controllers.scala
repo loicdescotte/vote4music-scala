@@ -52,22 +52,23 @@ object Application extends Controller {
   def save(@Valid album: Album, @Valid artist: Artist, cover: File) = {
     //forward if error
     if (Validation.hasErrors) {
-      //TODO does not work
       Action(form)
     }
-    album.artist = artist
-    album.replaceDuplicateArtist
-    album.save
-    if (cover != null) {
-      val path: String = "/public/shared/covers/" + album.id
-      album.hasCover = true
-      val newFile: File = Play.getFile(path)
-      if (newFile.exists) newFile.delete
-      cover.renameTo(newFile)
+    else{
+      album.artist = artist
+      album.replaceDuplicateArtist
       album.save
+      if (cover != null) {
+        val path: String = "/public/shared/covers/" + album.id
+        album.hasCover = true
+        val newFile: File = Play.getFile(path)
+        if (newFile.exists) newFile.delete
+        cover.renameTo(newFile)
+        album.save
+      }
+      //forward to list action
+      Action(list())
     }
-    //forward to list action
-    Action(list())
   }
 
   /**
