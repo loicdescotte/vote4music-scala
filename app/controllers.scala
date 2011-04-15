@@ -67,7 +67,7 @@ object Application extends Controller {
         album.save
       }
       //forward to list action
-      Action(list())
+      Action(list)
     }
   }
 
@@ -81,15 +81,11 @@ object Application extends Controller {
    * @param id
    */
   def vote(id: String) = {
-    val result = Albums.findById(id.toLong)
-    result match {
-      case None => 0
-      case Some(album) => {
-        album.vote()
-        album.nbVotes
-      }
+    Albums.findById(id.toLong).map( a =>{
+         a.vote()
+         a.nbVotes 
     }
-
+    ).getOrElse(NotFound("No such album"))
   }
 
   //TODO There is a bug in JSON serializer
@@ -104,7 +100,7 @@ object Admin extends Controller with AdminOnly {
    * Log in
    */
   def login = {
-    Action(Application.list())
+    Action(Application.list)
   }
 
   /**
@@ -112,12 +108,11 @@ object Admin extends Controller with AdminOnly {
    * @param id
    */
   def delete(id: Long) = {
-    val result = Albums.findById(id)
-    result match {
-      case Some(album) => album.delete
-      case None => 
+    Albums.findById(id.toLong).map( a => {
+        a.delete
+        Action(Application.list)
     }
-    Action(Application.list())
+    ).getOrElse(NotFound("No such album"))
   }
 
   /**
@@ -125,13 +120,9 @@ object Admin extends Controller with AdminOnly {
    * @param id
    */
   def form(id: Long) = {
-    val result = Albums.findById(id.toLong)
-    result match {
-      case Some(album) =>         
-        Template("@Application.form", 'album -> album)
-      case None => Template()
-    }
-
+    Albums.findById(id.toLong).map( a =>
+       Template("@Application.form", 'album -> a)
+    ).getOrElse(NotFound("No such album"))
   }
 }
 
