@@ -16,21 +16,21 @@ object Application extends Controller {
    * Album list
    */
   def list() = {
-    Template("albums" -> Albums.findAll())
+    Template('albums -> Albums.findAll())
   }
   
   /**
    * Album list with filter
    */
   def list(filter: String) = {
-    Template("albums" -> Albums.findAll(filter))
+    Template('albums -> Albums.findAll(filter))
   }
 
   /**
    * list albums by genre and year
    */
   def listByGenreAndYear(genre: String, year: String) = {
-    Template("albums" -> Albums.findByGenreAndYear(genre, year), "genre" -> genre, "year" -> year)
+    Template('albums -> Albums.findByGenreAndYear(genre, year), 'genre -> genre, 'year -> year)
   }
 
   /**
@@ -127,10 +127,8 @@ object Admin extends Controller with AdminOnly {
   def form(id: Long) = {
     val result = Albums.findById(id.toLong)
     result match {
-      case Some(album) => 
-        //TODO redirect to avoid template duplication
-        //This should work with next scala module version : Template("@Application.form", "album" -> album)
-        Template("album" -> album)
+      case Some(album) =>         
+        Template("@Application.form", 'album -> album)
       case None => Template()
     }
 
@@ -173,9 +171,8 @@ object Authentication extends Controller {
       Play.configuration.getProperty("application.adminpwd").equals(password) match {
       case true => session.put("username", username)
       Action(Application.index)
-      //TODO flash is lost, use Template("Application.index") when it will be available
       case false => flash.error(Messages.get("error.login"))      
-      Action(Admin.login)
+      Template("@Authentication.login")
     }
   }
 

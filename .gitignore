@@ -9,3 +9,6 @@ public/shared/covers/*
 tmp
 out
 test-result
+
+#dependencies
+modules
