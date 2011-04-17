@@ -10,7 +10,8 @@ class PopulateOnStart extends Job {
 	override def doJob={
 		// Check if the database is empty
 		if(Albums.count() == 0) {
-            Fixtures.load("init-data.yml")
+            //TODO play-scala bug in relation loading in yml files
+			//Fixtures.load("init-data.yml")
         }
 	}
  
