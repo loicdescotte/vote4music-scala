@@ -26,10 +26,10 @@ class Album(
      * @return found duplicate artist if any exists
      */
   def replaceDuplicateArtist() = {
-    val existingArtists = Artists.find("byName", artist.name).fetch()
-    if (existingArtists.size > 0)
-    //Artist name is unique
-    artist = existingArtists.apply(0)
+    val existingArtist = Artists.find("byName", artist.name).first.map( a => 
+        //Artist name is unique
+	    artist = a
+    )  
   }
 
   /**
@@ -96,7 +96,7 @@ object Albums extends QueryOn[Album] {
    *  find albums by genre and year
    */
   def findByGenreAndYear(genre: String, year: String) :  List[Album] = {
-    var albums = Albums.find("byGenre", genre.toUpperCase()).fetch()
+    var albums = Albums.find("byGenre", genre.toUpperCase).fetch
     //filter with Scala collections example
     albums = albums.filter(x => formatYear.format(x.releaseDate).equals(year))
     //sort by popularity
