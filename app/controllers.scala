@@ -22,8 +22,8 @@ object Application extends Controller {
   /**
    * Album list with filter
    */
-  def list(filter: String) = {
-    Template('albums -> Albums.findAll(filter))
+  def search(filter: String) = {
+    Template("@Application.list",'albums -> Albums.findAll(filter))
   }
 
   /**

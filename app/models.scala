@@ -61,7 +61,7 @@ object Albums extends QueryOn[Album] {
    * @param filter
    * @return found albums
    */
-  def findAll(filter: String): List[Album] = {
+  def findAll(filter: String) = {
     var albums: List[Album] = null
     if (filter != null) {
       val likeFilter = "%".concat(filter).concat("%")
@@ -95,7 +95,7 @@ object Albums extends QueryOn[Album] {
   /**
    *  find albums by genre and year
    */
-  def findByGenreAndYear(genre: String, year: String) :  List[Album] = {
+  def findByGenreAndYear(genre: String, year: String) = {
     var albums = Albums.find("byGenre", genre.toUpperCase).fetch
     //filter with Scala collections example
     albums = albums.filter(x => formatYear.format(x.releaseDate).equals(year))
