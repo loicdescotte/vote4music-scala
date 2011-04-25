@@ -16,14 +16,14 @@ object Application extends Controller {
    * Album list
    */
   def list() = {
-    Template('albums -> Albums.findAll())
+    Template('albums -> Albums.all.fetch(100))
   }
   
   /**
    * Album list with filter
    */
   def search(filter: String) = {
-    Template("@Application.list",'albums -> Albums.findAll(filter))
+    Template("@Application.list", 'albums -> Albums.findAll(filter))
   }
 
   /**
