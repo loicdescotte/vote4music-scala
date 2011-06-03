@@ -1,21 +1,16 @@
 package models
 
 import java.util.Date
-import javax.persistence._
-import play.db.jpa.Model
-import play.db.jpa.QueryOn
-import play.db.jpa.JPA
+import play.db.anorm._
+import play.db.anorm.defaults._
 import play.data.validation.Required
 import javax.persistence.{EnumType, TemporalType, CascadeType}
 import java.text.SimpleDateFormat
 
-
-@Entity
-class Album(
+case class Album(
              @Required var name: String,
-             @ManyToOne(cascade = Array(CascadeType.PERSIST, CascadeType.MERGE))
-             var artist: Artist,
-             @Temporal(TemporalType.DATE) @Required var releaseDate: Date,
+             var artist_id: Long,
+             @Required var releaseDate: Date,
              var genre: String,
              var nbVotes: Long = 0L,
              var hasCover: Boolean = false)
@@ -41,8 +36,7 @@ class Album(
   }
 }
 
-@Entity
-class Artist(@Required @Column(unique = true) var name: String) extends Model {
+case class Artist(@Required var name: String) extends Model {
 
 }
 
@@ -51,7 +45,7 @@ object Genres {
 }
 
 //Query object for albums
-object Album extends QueryOn[Album] {
+object Album extends Magic[Album] {
 
   private val formatYear: SimpleDateFormat = new SimpleDateFormat("yyyy");
   def em() = JPA.em()
@@ -113,4 +107,4 @@ object Album extends QueryOn[Album] {
 }
 
 //Query object for artists
-object Artist extends QueryOn[Artist]
+object Artist extends Magic[Artist]
