@@ -3,25 +3,28 @@ package models
 import java.util.Date
 import play.db.anorm._
 import play.db.anorm.defaults._
+import play.db.anorm
+import anorm.M._
 import play.data.validation.Required
-import javax.persistence.{EnumType, TemporalType, CascadeType}
 import java.text.SimpleDateFormat
+import java.lang.Long
+
 
 case class Album(
+             var code:Id[Long],
              @Required var name: String,
              var artist_id: Long,
              @Required var releaseDate: Date,
              var genre: String,
              var nbVotes: Long = 0L,
-             var hasCover: Boolean = false)
-  extends Model {
+             var hasCover: Boolean = false) {
 
   /*
    * Remove duplicate artist
      * @return found duplicate artist if any exists
      */
   def replaceDuplicateArtist() = {
-    val existingArtist = Artist.find("byName", artist.name).first.map( a => 
+    val existingArtist = Artist.find("name like {n}").on("n"->filter).first.map( a =>
         //Artist name is unique
 	    artist = a
     )  
@@ -36,7 +39,8 @@ case class Album(
   }
 }
 
-case class Artist(@Required var name: String) extends Model {
+
+case class Artist(var code:Id[Long],  @Required var name: String){
 
 }
 
@@ -47,8 +51,7 @@ object Genres {
 //Query object for albums
 object Album extends Magic[Album] {
 
-  private val formatYear: SimpleDateFormat = new SimpleDateFormat("yyyy");
-  def em() = JPA.em()
+  private val formatYear: SimpleDateFormat = new SimpleDateFormat("yyyy")
 
 
   /**
@@ -56,21 +59,21 @@ object Album extends Magic[Album] {
    * @return found albums
    */
   def findAll(filter: String) = {
+    //TODO 100 results
     var albums: List[Album] = null
     if (filter != null) {
-      val likeFilter = "%".concat(filter).concat("%")
-      albums = find("byNameLike", likeFilter).fetch
+      val filter = "%".concat(filter).concat("%")
+      albums = find("name like {n}").on("n"->filter).list
     }
-    else albums = find("from Album").fetch(100)
-    //TODO in private method for reuse
+    else albums = Album.find().list
     albums.sortBy(_.nbVotes).reverse
   }
 
   /**
    *  first album year
-   */
+   */                                                                                                                                   A
   def firstAlbumYear: Int = {
-    def resultDate = em().createQuery("select min(a.releaseDate) from Album a").getSingleResult().asInstanceOf[Date]
+    def resultDate = SQL("select min(a.releaseDate) from Album a").apply().head
     if (resultDate != null)
       return formatYear.format(resultDate).toInt
     else return 1990;
@@ -80,7 +83,7 @@ object Album extends Magic[Album] {
    * last album year
    */
   def lastAlbumYear: Int = {
-    def resultDate = em().createQuery("select max(a.releaseDate) from Album a").getSingleResult().asInstanceOf[Date]
+    def resultDate = SQL("select min(a.releaseDate) from Album a").apply().head
     if (resultDate != null)
       return formatYear.format(resultDate).toInt
     else return formatYear.format(new Date()).toInt
@@ -90,7 +93,7 @@ object Album extends Magic[Album] {
    * find albums by genre and year
    */
   def findByGenreAndYear(genre: String, year: String) = {
-    var albums = find("byGenre", genre.toUpperCase).fetch
+    var albums =  find("genre like {g}").on("g"->genre.toUpperCase).list
     //filter with Scala collections example
     albums = filterByYear(albums, year)
     //another scala example : sort by popularity
@@ -101,7 +104,7 @@ object Album extends Magic[Album] {
   * filter by year
   */
   def filterByYear (albums:List[Album], year:String) = {
-	albums.filter(x => formatYear.format(x.releaseDate).equals(year))
+	  albums.filter(x => formatYear.format(x.releaseDate).equals(year))
   }
 
 }

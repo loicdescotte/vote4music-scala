@@ -58,15 +58,18 @@ object Application extends Controller {
     }
     else{
       album.artist = artist
+      //TODO creer si nouveau
+      Artist.create(artist);
+      album.artist_id=artist.
       album.replaceDuplicateArtist
-      album.save
+      Album.create(album)
       if (cover != null) {
         val path: String = "/public/shared/covers/" + album.id
         album.hasCover = true
         val newFile: File = Play.getFile(path)
         if (newFile.exists) newFile.delete
         cover.renameTo(newFile)
-        album.save
+        Album.update(album)
       }
       //forward to list action
       Action(list)
