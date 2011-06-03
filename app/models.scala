@@ -26,7 +26,7 @@ class Album(
      * @return found duplicate artist if any exists
      */
   def replaceDuplicateArtist() = {
-    val existingArtist = Artists.find("byName", artist.name).first.map( a => 
+    val existingArtist = Artist.find("byName", artist.name).first.map( a => 
         //Artist name is unique
 	    artist = a
     )  
@@ -51,7 +51,7 @@ object Genres {
 }
 
 //Query object for albums
-object Albums extends QueryOn[Album] {
+object Album extends QueryOn[Album] {
 
   private val formatYear: SimpleDateFormat = new SimpleDateFormat("yyyy");
   def em() = JPA.em()
@@ -65,9 +65,9 @@ object Albums extends QueryOn[Album] {
     var albums: List[Album] = null
     if (filter != null) {
       val likeFilter = "%".concat(filter).concat("%")
-      albums = find("select a from Album a where a.name like ? or a.artist.name like ?", likeFilter, likeFilter).fetch
+      albums = find("byNameLike", likeFilter).fetch
     }
-    else albums = Albums.find("from Album").fetch(100)
+    else albums = find("from Album").fetch(100)
     //TODO in private method for reuse
     albums.sortBy(_.nbVotes).reverse
   }
@@ -86,24 +86,31 @@ object Albums extends QueryOn[Album] {
    * last album year
    */
   def lastAlbumYear: Int = {
-    def resultDate = em().createQuery("select min(a.releaseDate) from Album a").getSingleResult().asInstanceOf[Date]
+    def resultDate = em().createQuery("select max(a.releaseDate) from Album a").getSingleResult().asInstanceOf[Date]
     if (resultDate != null)
       return formatYear.format(resultDate).toInt
     else return formatYear.format(new Date()).toInt
   }
 
   /**
-   *  find albums by genre and year
+   * find albums by genre and year
    */
   def findByGenreAndYear(genre: String, year: String) = {
-    var albums = Albums.find("byGenre", genre.toUpperCase).fetch
+    var albums = find("byGenre", genre.toUpperCase).fetch
     //filter with Scala collections example
-    albums = albums.filter(x => formatYear.format(x.releaseDate).equals(year))
-    //sort by popularity
+    albums = filterByYear(albums, year)
+    //another scala example : sort by popularity
     albums.sortBy(_.nbVotes).reverse
+  }
+
+  /**
+  * filter by year
+  */
+  def filterByYear (albums:List[Album], year:String) = {
+	albums.filter(x => formatYear.format(x.releaseDate).equals(year))
   }
 
 }
 
 //Query object for artists
-object Artists extends QueryOn[Artist]
+object Artist extends QueryOn[Artist]

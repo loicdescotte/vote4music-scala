@@ -1,12 +1,14 @@
 package controllers
 
-import _root_.models.{Album, Artist, Albums}
+import models._
 import play._
 import play.data.validation.{Valid, Validation}
 import play.mvc._
 import play.i18n.Messages
 import templates.Template
 import java.io.File
+import views.Application._
+
 
 object Application extends Controller {
 
@@ -16,29 +18,29 @@ object Application extends Controller {
    * Album list
    */
   def list() = {
-    Template('albums -> Albums.all.fetch(100))
+    Template('albums -> Album.all.fetch(100))
   }
   
   /**
    * Album list with filter
    */
   def search(filter: String) = {
-    Template("@Application.list", 'albums -> Albums.findAll(filter))
+    Template("@Application.list", 'albums -> Album.findAll(filter))
   }
 
   /**
    * list albums by genre and year
    */
   def listByGenreAndYear(genre: String, year: String) = {
-    Template('albums -> Albums.findByGenreAndYear(genre, year), 'genre -> genre, 'year -> year)
+    Template('albums -> Album.findByGenreAndYear(genre, year), 'genre -> genre, 'year -> year)
   }
 
   /**
    * Years of albums releases
    */
   def yearsToDisplay: List[Int] = {
-    val first = Albums.firstAlbumYear
-    val last = Albums.lastAlbumYear
+    val first = Album.firstAlbumYear
+    val last = Album.lastAlbumYear
     first.to(last).toList.reverse
   }
 
@@ -81,16 +83,41 @@ object Application extends Controller {
    * @param id
    */
   def vote(id: String) = {
-    Albums.findById(id.toLong).map( a =>{
+    Album.findById(id.toLong).map( a =>{
          a.vote()
          a.nbVotes 
     }
     ).getOrElse(NotFound("No such album"))
   }
 
-  //TODO There is a bug in JSON serializer
-  def listByApi = Json(Albums.findAll())
+  
 
+  /**
+   * List albums in xml or json format
+   *
+   * @param genre
+   * @param year
+   */
+	def listByApi(genre:String, year:String) = {
+      var albums : List[Album] = null;
+      if (genre != null) {
+          albums = Album.find("byGenre", genre.toUpperCase()).fetch()
+      } else {
+          albums = Album.findAll()
+      }
+      if (year != null) {
+          albums = Album.filterByYear(albums, year)
+      }
+
+	  //TODO There is a bug in JSON serializer
+	  /*
+      if (request.format.equals("json"))
+	  return Json(albums)
+	  */
+	  //TODO not working with 'xml' yet  
+	  html.listByApi(albums)
+  }
+	
 }
 
 
@@ -108,7 +135,7 @@ object Admin extends Controller with AdminOnly {
    * @param id
    */
   def delete(id: Long) = {
-    Albums.findById(id.toLong).map( a => {
+    Album.findById(id.toLong).map( a => {
         a.delete
         Action(Application.list)
     }
@@ -120,7 +147,7 @@ object Admin extends Controller with AdminOnly {
    * @param id
    */
   def form(id: Long) = {
-    Albums.findById(id.toLong).map( a =>
+    Album.findById(id.toLong).map( a =>
        Template("@Application.form", 'album -> a)
     ).getOrElse(NotFound("No such album"))
   }

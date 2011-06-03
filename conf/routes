@@ -13,7 +13,10 @@ GET     /album/{id}                                             Admin.form
 POST	/api/album                                              Application.saveAlbumJson
 
 #API
-GET	    /api/albums.json                                        Application.listByApi
+GET	    /api/albums.{<json|xml>format}                          Application.listByApi
+GET	    /api/{genre}/albums.{<json|xml>format}                  Application.listByApi
+GET	    /api/{genre}/{year}/albums.{<json|xml>format}           Application.listByApi
+GET	    /api/artists.{<json|xml>format}                         Application.listArtistsByApi
 
 #Vote
 POST	/vote                                                   Application.vote

@@ -1,0 +1,13 @@
+@(albums:List[models.Album])
+<?xml version='1.0' encoding='utf-8'?>
+<albums>   
+@albums.map { album =>    
+	<album>
+        <artist>@album.artist.name</artist>
+        <name>@album.name</name>
+        <release-date>@album.releaseDate.format("yyyy")</release-date>
+        <genre>@album.genre</genre>
+        <nvVotes>@album.nbVotes</nvVotes>
+    </album>
+}
+</albums>	
