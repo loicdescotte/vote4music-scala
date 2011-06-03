@@ -18,7 +18,7 @@ object Application extends Controller {
    * Album list
    */
   def list() = {
-    Template('albums -> Album.all.fetch(100))
+    Template('albums -> Album.find().list())//Album.all.fetch(100))
   }
   
   /**
@@ -57,11 +57,11 @@ object Application extends Controller {
       Action(form)
     }
     else{
-      album.artist = artist
+      album.artist_id = artist.code
       //TODO creer si nouveau
       Artist.create(artist);
       album.artist_id=artist.
-      album.replaceDuplicateArtist
+      //album.replaceDuplicateArtist
       Album.create(album)
       if (cover != null) {
         val path: String = "/public/shared/covers/" + album.id

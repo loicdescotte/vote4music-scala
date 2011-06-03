@@ -4,7 +4,6 @@ import java.util.Date
 import play.db.anorm._
 import play.db.anorm.defaults._
 import play.db.anorm
-import anorm.M._
 import play.data.validation.Required
 import java.text.SimpleDateFormat
 import java.lang.Long
@@ -60,13 +59,13 @@ object Album extends Magic[Album] {
    */
   def findAll(filter: String) = {
     //TODO 100 results
-    var albums: List[Album] = null
+    var albums: Seq[Album] = null
     if (filter != null) {
-      val filter = "%".concat(filter).concat("%")
-      albums = find("name like {n}").on("n"->filter).list
+      val likeFilter = "%".concat(filter).concat("%")
+      albums = find("name like {n}").on("n"->filter).list()
     }
-    else albums = Album.find().list
-    albums.sortBy(_.nbVotes).reverse
+    else albums = Album.find().list()
+    //TODO  albums.sortBy(_.nbVotes).reverse
   }
 
   /**
@@ -93,17 +92,17 @@ object Album extends Magic[Album] {
    * find albums by genre and year
    */
   def findByGenreAndYear(genre: String, year: String) = {
-    var albums =  find("genre like {g}").on("g"->genre.toUpperCase).list
+    var albums = find("genre like {g}").on("g"->genre.toUpperCase).list()
     //filter with Scala collections example
     albums = filterByYear(albums, year)
     //another scala example : sort by popularity
-    albums.sortBy(_.nbVotes).reverse
+    //TODO albums.sortBy(_.nbVotes).reverse
   }
 
   /**
   * filter by year
   */
-  def filterByYear (albums:List[Album], year:String) = {
+  def filterByYear (albums:Seq[Album], year:String) = {
 	  albums.filter(x => formatYear.format(x.releaseDate).equals(year))
   }
 
