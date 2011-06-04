@@ -18,7 +18,7 @@ object Application extends Controller {
    * Album list
    */
   def list() = {
-    Template('albums -> Album.find("limit 100").list())
+    Template('albums -> Album.find("select * from Album a limit 100").list())
   }
   
   /**
@@ -57,14 +57,12 @@ object Application extends Controller {
       Action(form)
     }
     else{
-      album.artist_id = artist.code
-      Album.create(album)
       //TODO creer si nouveau
-      Artist.create(artist);
-      album.artist_id=artist.code
+      Album.insert(album)
+      Artist.insert(artist);
       //album.replaceDuplicateArtist
       if (cover != null) {
-        val path: String = "/public/shared/covers/" + album.code
+        val path: String = "/public/shared/covers/" + album.id
         album.hasCover = true
         val newFile: File = Play.getFile(path)
         if (newFile.exists) newFile.delete
@@ -86,7 +84,7 @@ object Application extends Controller {
    * @param id
    */
   def vote(id: String) = {
-    Album.find("code = {c}").on("c" -> id).list().map( a =>{
+    Album.find("id = {c}").on("c" -> id).list().map( a =>{
          a.vote()
          a.nbVotes 
     })
@@ -137,8 +135,8 @@ object Admin extends Controller with AdminOnly {
    * @param id
    */
   def delete(id: Long) = {
-    Album.find("code = {c}").on("c" -> id).list().map( a => {
-        Album.delete("code={c}").onParams(id).executeUpdate()
+    Album.find("id = {c}").on("c" -> id).list().map( a => {
+        Album.delete("id={c}").onParams(id).executeUpdate()
         Action(Application.list)
     })
   }
@@ -148,7 +146,7 @@ object Admin extends Controller with AdminOnly {
    * @param id
    */
   def form(id: Long) = {
-    Album.find("code = {c}").on("c" -> id).list().map( a =>
+    Album.find("id = {c}").on("c" -> id).list().map( a =>
        Template("@Application.form", 'album -> a)
     )
   }

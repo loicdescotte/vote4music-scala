@@ -10,7 +10,7 @@ import java.lang.Long
 
 
 case class Album(
-             var code:Id[Long],
+             var id:Id[Long],
              @Required var name: String,
              var artist_id: Long,
              @Required var releaseDate: Date,
@@ -33,13 +33,13 @@ case class Album(
    * Vote for an album
    */
   def vote():Unit = {
-   nbVotes +=1
+   //nbVotes +=1
    Album.update(this)
   }
 }
 
 
-case class Artist(var code:Id[Long],  @Required var name: String){
+case class Artist(var id:Id[Long],  @Required var name: String){
 
 }
 
@@ -70,22 +70,28 @@ object Album extends Magic[Album] {
 
   /**
    *  first album year
-   */                                                                                                                                   A
+   */                                                                                                                                   
   def firstAlbumYear: Int = {
-    def resultDate = SQL("select min(a.releaseDate) from Album a").apply().head
-    if (resultDate != null)
-      return formatYear.format(resultDate).toInt
-    else return 1990;
-  }
+    /*
+	val firstRow:Option[Row] = SQL("select min(a.releaseDate) as d from Album a").first()
+	 firstRow.map( d =>{
+	         formatYear.format(firstRow[Date]("d")).toInt;
+ 	 }).getOrElse(formatYear.format(1990)
+	*/
+	1990
+ }
 
   /**
    * last album year
    */
   def lastAlbumYear: Int = {
-    def resultDate = SQL("select min(a.releaseDate) from Album a").apply().head
-    if (resultDate != null)
-      return formatYear.format(resultDate).toInt
-    else return formatYear.format(new Date()).toInt
+	/* 
+	val firstRow:Option[Row] = SQL("select min(a.releaseDate) as d from Album a").first()
+	 firstRow.map( d =>{
+	         formatYear.format(firstRow[Date]("d")).toInt;
+ 	 }).getOrElse(formatYear.format(new Date()).toInt)
+	*/
+	formatYear.format(new Date()).toInt
   }
 
   /**
