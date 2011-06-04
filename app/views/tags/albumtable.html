@@ -31,7 +31,8 @@
     </thead>
     #{list _albums, as:'album'}
     <tr id="album-${album.id}">
-        <td>${album.artist?.name}</td>
+        <!--<td> ${artist?.name}</td>-->
+		<td>$artist</td>
         <td>${album.name}</td>
         <td>
             #{if album?.hasCover}

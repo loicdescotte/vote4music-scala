@@ -58,9 +58,13 @@ object Application extends Controller {
     }
     else{
       //TODO creer si nouveau
-      val a = params.get("album", classOf[Album])
-	  Album.insert(a)
-      Artist.insert(artist)
+      //val a = params.get("album", classOf[Album])
+		Artist.insert(artist)
+    album.artist_id=1
+	if(album.id==null){
+		album.nbVotes=0
+		Album.insert(album)
+	}	
       //album.replaceDuplicateArtist
       if (cover != null) {
         val path: String = "/public/shared/covers/" + album.id

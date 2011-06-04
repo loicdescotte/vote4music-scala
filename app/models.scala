@@ -6,17 +6,17 @@ import play.db.anorm.defaults._
 import play.db.anorm
 import play.data.validation.Required
 import java.text.SimpleDateFormat
-import java.lang.Long
 
 
 case class Album(
              var id:Id[Long],
              @Required var name: String,
-             var artist_id: Long,
              @Required var releaseDate: Date,
              var genre: String,
              var nbVotes: Long = 0L,
-             var hasCover: Boolean = false) {
+             var hasCover: Boolean = false,
+			 var artist_id: Long	
+			 ) {
 
   /*
    * Remove duplicate artist
@@ -32,8 +32,8 @@ case class Album(
   /**
    * Vote for an album
    */
-  def vote():Unit = {
-   //nbVotes +=1
+  def vote()={
+   this.nbVotes +=1
    Album.update(this)
   }
 }
