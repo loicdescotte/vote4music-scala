@@ -18,7 +18,7 @@ object Application extends Controller {
    * Album list
    */
   def list() = {
-    Template('albums -> Album.find().list())//Album.all.fetch(100))
+    Template('albums -> Album.find("limit 100").list())
   }
   
   /**
@@ -58,13 +58,13 @@ object Application extends Controller {
     }
     else{
       album.artist_id = artist.code
+      Album.create(album)
       //TODO creer si nouveau
       Artist.create(artist);
-      album.artist_id=artist.
+      album.artist_id=artist.code
       //album.replaceDuplicateArtist
-      Album.create(album)
       if (cover != null) {
-        val path: String = "/public/shared/covers/" + album.id
+        val path: String = "/public/shared/covers/" + album.code
         album.hasCover = true
         val newFile: File = Play.getFile(path)
         if (newFile.exists) newFile.delete
@@ -86,11 +86,10 @@ object Application extends Controller {
    * @param id
    */
   def vote(id: String) = {
-    Album.findById(id.toLong).map( a =>{
+    Album.find("code = {c}").on("c" -> id).list().map( a =>{
          a.vote()
          a.nbVotes 
-    }
-    ).getOrElse(NotFound("No such album"))
+    })
   }
 
   
@@ -102,11 +101,11 @@ object Application extends Controller {
    * @param year
    */
 	def listByApi(genre:String, year:String) = {
-      var albums : List[Album] = null;
+      var albums : Seq[Album] = null;
       if (genre != null) {
-          albums = Album.find("byGenre", genre.toUpperCase()).fetch()
+          albums = Album.find("genre like {g}").on("g"->genre.toUpperCase).list()
       } else {
-          albums = Album.findAll()
+          albums = Album.find().list()
       }
       if (year != null) {
           albums = Album.filterByYear(albums, year)
@@ -118,7 +117,7 @@ object Application extends Controller {
 	  return Json(albums)
 	  */
 	  //TODO not working with 'xml' yet  
-	  html.listByApi(albums)
+	  //xml.listByApi(albums)
   }
 	
 }
@@ -138,11 +137,10 @@ object Admin extends Controller with AdminOnly {
    * @param id
    */
   def delete(id: Long) = {
-    Album.findById(id.toLong).map( a => {
-        a.delete
+    Album.find("code = {c}").on("c" -> id).list().map( a => {
+        Album.delete("code={c}").onParams(id).executeUpdate()
         Action(Application.list)
-    }
-    ).getOrElse(NotFound("No such album"))
+    })
   }
 
   /**
@@ -150,9 +148,9 @@ object Admin extends Controller with AdminOnly {
    * @param id
    */
   def form(id: Long) = {
-    Album.findById(id.toLong).map( a =>
+    Album.find("code = {c}").on("c" -> id).list().map( a =>
        Template("@Application.form", 'album -> a)
-    ).getOrElse(NotFound("No such album"))
+    )
   }
 }
 

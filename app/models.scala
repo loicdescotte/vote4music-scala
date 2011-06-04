@@ -21,20 +21,20 @@ case class Album(
   /*
    * Remove duplicate artist
      * @return found duplicate artist if any exists
-     */
+     
   def replaceDuplicateArtist() = {
     val existingArtist = Artist.find("name like {n}").on("n"->filter).first.map( a =>
         //Artist name is unique
 	    artist = a
     )  
-  }
+  }*/
 
   /**
    * Vote for an album
    */
-  def vote() = {
+  def vote():Unit = {
    nbVotes +=1
-   save
+   Album.update(this)
   }
 }
 
