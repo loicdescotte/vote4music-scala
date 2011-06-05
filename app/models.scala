@@ -72,16 +72,21 @@ object Album extends Magic[Album] {
    *  first album year
    */                                                                                                                                   
   def firstAlbumYear: Int = {	
-	val row = SQL("select min(a.releaseDate) as d from Album a").single()
-	formatYear.format(row[Date]("d")).toInt
+	SQL("select min(a.releaseDate) as d from Album a") ().collect {
+		case Row(date:Date) => formatYear.format(date).toInt
+		case _ => 1990
+	}.apply(0)
+	
  }
 
   /**
    * last album year
    */
   def lastAlbumYear: Int = {
-	val row = SQL("select max(a.releaseDate) as d from Album a").single()
-	formatYear.format(row[Date]("d")).toInt
+	SQL("select max(a.releaseDate) as d from Album a") ().collect {
+		case Row(date:Date) => formatYear.format(date).toInt
+		case _ => formatYear.format(new Date()).toInt
+	}.apply(0)
   }
 
   /**
