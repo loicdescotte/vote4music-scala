@@ -1,14 +1,19 @@
-Artist(joe) :
+- !!models.Artist
+    id: !!Id[Long] 1
     name: joe
 
-Album(coolAlbum) :
-    name: coolAlbum
-    artist: joe
-    releaseDate: 2010-11-12 00:00:00
-    genre: ROCK
-    
-Album(superAlbum) :
+- !!models.Album
+    id: !!Id[Long] 1
     name: superAlbum
-    artist: joe
+    artist_id: 1
     releaseDate: 2011-10-09 00:00:00
     genre: ROCK
+    hasCover : false
+
+- !!models.Album
+    id: !!Id[Long] 2
+    name: coolAlbum
+    artist_id: 1
+    releaseDate: 2011-11-09 00:00:00
+    genre: POP
+    hasCover : false

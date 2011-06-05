@@ -1,11 +1,11 @@
 package models
 
-import java.util.Date
 import play.db.anorm._
 import play.db.anorm.defaults._
 import play.db.anorm
 import play.data.validation.Required
 import java.text.SimpleDateFormat
+import java.util.Date
 
 
 case class Album(
@@ -72,12 +72,9 @@ object Album extends Magic[Album] {
    *  first album year
    */                                                                                                                                   
   def firstAlbumYear: Int = {
-    /*
-	val firstRow:Option[Row] = SQL("select min(a.releaseDate) as d from Album a").first()
-	 firstRow.map( d =>{
-	         formatYear.format(firstRow[Date]("d")).toInt;
- 	 }).getOrElse(formatYear.format(1990)
-	*/
+    
+	//val date:Date = SQL("select min(a.releaseDate) as d from Album a").apply.head.asInstanceOf[Date]
+	//formatYear.format(date).toInt
 	1990
  }
 
