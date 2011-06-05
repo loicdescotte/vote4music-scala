@@ -6,7 +6,7 @@
     id: !!Id[Long] 1
     name: superAlbum
     artist_id: 1
-    releaseDate: 2011-10-09 00:00:00
+    releaseDate: 2010-10-01 00:00:00
     genre: ROCK
     hasCover : false
 
