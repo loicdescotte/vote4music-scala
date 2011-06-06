@@ -52,62 +52,99 @@ object Album extends Magic[Album] {
 
   private val formatYear: SimpleDateFormat = new SimpleDateFormat("yyyy")
 
-
   /**
    * @param filter
    * @return found albums
    */
-  def findAll(filter: String) = {
-    //TODO 100 results
-    var albums: Seq[Album] = null
-    if (filter != null) {
+  def findAll(filter: String):List[(Album,Artist)] = {
       val likeFilter = "%".concat(filter).concat("%")
-      albums = find("name like {n}").on("n"->filter).list()
-    }
-    else albums = Album.find().list()
-    //TODO  albums.sortBy(_.nbVotes).reverse
+      SQL(
+       """
+           select * from Album al
+           join Artist ar on al.artist_id = ar.id
+           where al.name like {n}
+           or ar.name like {n}
+           order by al.nbVotes desc
+           limit 100
+       """
+      ).on("n"->filter)
+      .as( Album ~< Artist ^^ flatten *)
   }
+
+def findAll():List[(Album,Artist)] = {
+      SQL(
+       """
+           select * from Album al
+           join Artist ar on al.artist_id = ar.id
+           order by al.nbVotes desc
+           limit 100
+       """
+      ).as( Album ~< Artist ^^ flatten *)
+}
 
   /**
    *  first album year
    */                                                                                                                                   
   def firstAlbumYear: Int = {	
-	SQL("select min(a.releaseDate) from Album a").apply().head match {
-		case Row(date:Date) => formatYear.format(date).toInt
-		case _ => 1990
-	}
-	
- }
+    SQL("select min(a.releaseDate) from Album a").apply().head match {
+      case Row(date:Date) => formatYear.format(date).toInt
+      case _ => 1990
+    }
+  }
 
   /**
    * last album year
    */
   def lastAlbumYear: Int = {
-	SQL("select max(a.releaseDate) from Album a").apply().head match {
-		case Row(date:Date) => formatYear.format(date).toInt
-		case _ => formatYear.format(new Date()).toInt
-	}
+    SQL("select max(a.releaseDate) from Album a").apply().head match {
+      case Row(date:Date) => formatYear.format(date).toInt
+      case _ => formatYear.format(new Date()).toInt
+    }
   }
 
   /**
    * find albums by genre and year
    */
-  def findByGenreAndYear(genre: String, year: String) = {
+  def findByGenreAndYear(genre: String, year: String):List[(Album,Artist)] = {
+
+    SQL(
+       """
+           select * from Album al
+           join Artist ar on al.artist_id = ar.id
+           where al.genre = {g}
+           order by al.nbVotes desc
+           limit 100
+       """
+    ).on("g"->genre.toUpperCase)
+    .as( Album ~< Artist ^^ flatten *)
     var albums = find("genre like {g}").on("g"->genre.toUpperCase).list()
     //filter with Scala collections example
-    albums = filterByYear(albums, year)
-    //another scala example : sort by popularity
-    //TODO albums.sortBy(_.nbVotes).reverse
+    filterByYear(albums, year)
   }
 
   /**
   * filter by year
   */
-  def filterByYear (albums:Seq[Album], year:String) = {
+  def filterByYear (albums:List[Album], year:String):List[(Album,Artist)] = {
 	  albums.filter(x => formatYear.format(x.releaseDate).equals(year))
   }
 
 }
 
 //Query object for artists
-object Artist extends Magic[Artist]
+object Artist extends Magic[Artist] {
+
+  def findOrCreate(artist:Artist):Long= {
+      find("name = {n}").on("n"->artist.name).first().map(
+        //if found, return the id
+        a => a.id
+      )
+      // if no result found
+      .getOrElse(
+         insert(artist)
+         //recursive call, now it should return a result!
+         findOrCreate(artist)
+      )
+  }
+
+}

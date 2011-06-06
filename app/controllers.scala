@@ -18,9 +18,9 @@ object Application extends Controller {
    * Album list
    */
   def list() = {
-    Template('albums -> Album.find("select * from Album limit 100").list())
+    Template('albums -> Album.findAll())
   }
-  
+
   /**
    * Album list with filter
    */
@@ -56,15 +56,14 @@ object Application extends Controller {
     if (Validation.hasErrors) {
       Action(form)
     }
-    else{
-      //TODO creer si nouveau
-      //val a = params.get("album", classOf[Album])
-		Artist.insert(artist)
-    album.artist_id=1
-	if(album.id==null){
-		album.nbVotes=0
-		Album.insert(album)
-	}	
+    else {
+      val artistId = Artist.findOrCreate(artist)
+      album.artist_id = artistId
+      //if new album (create mode)
+      if (album.id == null) {
+        album.nbVotes = 0
+        Album.insert(album)
+      }
       //album.replaceDuplicateArtist
       if (cover != null) {
         val path: String = "/public/shared/covers/" + album.id
@@ -89,13 +88,12 @@ object Application extends Controller {
    * @param id
    */
   def vote(id: String) = {
-    Album.find("id = {c}").on("c" -> id).list().map( a =>{
-         a.vote()
-         a.nbVotes 
+    Album.find("id = {c}").on("c" -> id).list().map(a => {
+      a.vote()
+      a.nbVotes
     })
   }
 
-  
 
   /**
    * List albums in xml or json format
@@ -103,26 +101,26 @@ object Application extends Controller {
    * @param genre
    * @param year
    */
-	def listByApi(genre:String, year:String) = {
-      var albums : Seq[Album] = null;
-      if (genre != null) {
-          albums = Album.find("genre like {g}").on("g"->genre.toUpperCase).list()
-      } else {
-          albums = Album.find().list()
-      }
-      if (year != null) {
-          albums = Album.filterByYear(albums, year)
-      }
+  def listByApi(genre: String, year: String) = {
+    var albums: Seq[Album] = null;
+    if (genre != null) {
+      albums = Album.find("genre like {g}").on("g" -> genre.toUpperCase).list()
+    } else {
+      albums = Album.find().list()
+    }
+    if (year != null) {
+      albums = Album.filterByYear(albums, year)
+    }
 
-	  //TODO There is a bug in JSON serializer
-	  /*
-      if (request.format.equals("json"))
-	  return Json(albums)
-	  */
-	  //TODO not working with 'xml' yet  
-	  //xml.listByApi(albums)
+    //TODO There is a bug in JSON serializer
+    /*
+       if (request.format.equals("json"))
+     return Json(albums)
+     */
+    //TODO not working with 'xml' yet
+    //xml.listByApi(albums)
   }
-	
+
 }
 
 
@@ -140,9 +138,9 @@ object Admin extends Controller with AdminOnly {
    * @param id
    */
   def delete(id: Long) = {
-    Album.find("id = {c}").on("c" -> id).list().map( a => {
-        Album.delete("id={c}").onParams(id).executeUpdate()
-        Action(Application.list)
+    Album.find("id = {c}").on("c" -> id).list().map(a => {
+      Album.delete("id={c}").onParams(id).executeUpdate()
+      Action(Application.list)
     })
   }
 
@@ -151,8 +149,8 @@ object Admin extends Controller with AdminOnly {
    * @param id
    */
   def form(id: Long) = {
-    Album.find("id = {c}").on("c" -> id).list().map( a =>
-       Template("@Application.form", 'album -> a)
+    Album.find("id = {c}").on("c" -> id).list().map(a =>
+      Template("@Application.form", 'album -> a)
     )
   }
 }
@@ -193,7 +191,7 @@ object Authentication extends Controller {
       Play.configuration.getProperty("application.adminpwd").equals(password) match {
       case true => session.put("username", username)
       Action(Application.index)
-      case false => flash.error(Messages.get("error.login"))      
+      case false => flash.error(Messages.get("error.login"))
       Template("@Authentication.login")
     }
   }
