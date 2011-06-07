@@ -3,6 +3,7 @@ package models
 import play.db.anorm._
 import play.db.anorm.defaults._
 import play.db.anorm
+import play.db.anorm.SqlParser._
 import play.data.validation.Required
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -56,7 +57,7 @@ object Album extends Magic[Album] {
    * @param filter
    * @return found albums
    */
-  def findAll(filter: String):List[(Album,Artist)] = {
+  def search(filter: String):List[(Album,Artist)] = {
       val likeFilter = "%".concat(filter).concat("%")
       SQL(
        """
@@ -68,10 +69,10 @@ object Album extends Magic[Album] {
            limit 100
        """
       ).on("n"->filter)
-      .as( Album ~< Artist ^^ flatten *)
+      .as( Album ~< Artist ^^ flatten * )
   }
 
-def findAll():List[(Album,Artist)] = {
+def findAll:List[(Album,Artist)] = 
       SQL(
        """
            select * from Album al
@@ -79,8 +80,8 @@ def findAll():List[(Album,Artist)] = {
            order by al.nbVotes desc
            limit 100
        """
-      ).as( Album ~< Artist ^^ flatten *)
-}
+      ).as( Album ~< Artist ^^ flatten * )
+
 
   /**
    *  first album year
@@ -107,7 +108,7 @@ def findAll():List[(Album,Artist)] = {
    */
   def findByGenreAndYear(genre: String, year: String):List[(Album,Artist)] = {
 
-    SQL(
+    val albums = SQL(
        """
            select * from Album al
            join Artist ar on al.artist_id = ar.id
@@ -117,16 +118,17 @@ def findAll():List[(Album,Artist)] = {
        """
     ).on("g"->genre.toUpperCase)
     .as( Album ~< Artist ^^ flatten *)
-    var albums = find("genre like {g}").on("g"->genre.toUpperCase).list()
     //filter with Scala collections example
-    filterByYear(albums, year)
+    //TODO filterByYear(albums, year)
+    return albums
   }
 
   /**
   * filter by year
   */
-  def filterByYear (albums:List[Album], year:String):List[(Album,Artist)] = {
-	  albums.filter(x => formatYear.format(x.releaseDate).equals(year))
+  def filterByYear (albums:List[(Album,Artist)], year:String):List[(Album,Artist)] = {
+	  //TODO albums.filter(x => formatYear.format(x.releaseDate).equals(year))
+    return albums
   }
 
 }
@@ -135,16 +137,15 @@ def findAll():List[(Album,Artist)] = {
 object Artist extends Magic[Artist] {
 
   def findOrCreate(artist:Artist):Long= {
-      find("name = {n}").on("n"->artist.name).first().map(
-        //if found, return the id
-        a => a.id
-      )
-      // if no result found
-      .getOrElse(
-         insert(artist)
-         //recursive call, now it should return a result!
-         findOrCreate(artist)
-      )
+      find("name = {n}").on("n"->artist.name).first() match{       
+        case Some(a:Artist) => a.id
+        case None => {
+           insert(artist)
+           //recursive call
+           findOrCreate(artist)
+           //find("name = {n}").on("n"->artist.name).single().id
+        }
+      }
   }
 
 }

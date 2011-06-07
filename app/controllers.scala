@@ -18,14 +18,14 @@ object Application extends Controller {
    * Album list
    */
   def list() = {
-    Template('albums -> Album.findAll())
+    Template('albums -> Album.findAll)
   }
 
   /**
    * Album list with filter
    */
   def search(filter: String) = {
-    Template("@Application.list", 'albums -> Album.findAll(filter))
+    Template("@Application.list", 'albums -> Album.search(filter))
   }
 
   /**
@@ -101,6 +101,7 @@ object Application extends Controller {
    * @param genre
    * @param year
    */
+/*
   def listByApi(genre: String, year: String) = {
     var albums: Seq[Album] = null;
     if (genre != null) {
@@ -112,17 +113,17 @@ object Application extends Controller {
       albums = Album.filterByYear(albums, year)
     }
 
-    //TODO There is a bug in JSON serializer
-    /*
-       if (request.format.equals("json"))
-     return Json(albums)
-     */
+    //TODO There is a bug in JSON serializer    
+     //if (request.format.equals("json"))
+     //return Json(albums)
+     
     //TODO not working with 'xml' yet
     //xml.listByApi(albums)
   }
 
-}
+*/
 
+}
 
 object Admin extends Controller with AdminOnly {
 
