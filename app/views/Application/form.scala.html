@@ -4,6 +4,7 @@
 <h1>Please write information about your favorite album</h1>
 
 #{form @Application.save(), id:'form', method:'POST', enctype:'multipart/form-data'}
+@
 <input type="hidden" name="album.id" value="${album?.id}"/>
 
 <p class="field">

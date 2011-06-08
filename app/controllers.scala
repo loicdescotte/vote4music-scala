@@ -12,7 +12,7 @@ import views.Application._
 
 object Application extends Controller {
 
-  def index = Template
+  def index = html.index
 
   /**
    * Album list
