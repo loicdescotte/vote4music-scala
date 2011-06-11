@@ -5,7 +5,6 @@ import play._
 import play.data.validation.{Valid, Validation}
 import play.mvc._
 import play.i18n.Messages
-import templates.Template
 import java.io.File
 import views.Application._
 
@@ -18,21 +17,21 @@ object Application extends Controller {
    * Album list
    */
   def list() = {
-    Template('albums -> Album.findAll)
+    html.list(Album.findAll)
   }
 
   /**
    * Album list with filter
    */
   def search(filter: String) = {
-    Template("@Application.list", 'albums -> Album.search(filter))
+    html.list(Album.search(filter))
   }
 
   /**
    * list albums by genre and year
    */
   def listByGenreAndYear(genre: String, year: String) = {
-    Template('albums -> Album.findByGenreAndYear(genre, year), 'genre -> genre, 'year -> year)
+    html.listByGenreAndYear(Album.findByGenreAndYear(genre, year), genre, year)
   }
 
   /**
@@ -81,7 +80,7 @@ object Application extends Controller {
   /**
    * Just display the form
    */
-  def form = Template
+  def form = html.form
 
   /**
    * vote for an album
@@ -193,7 +192,7 @@ object Authentication extends Controller {
       case true => session.put("username", username)
       Action(Application.index)
       case false => flash.error(Messages.get("error.login"))
-      Template("@Authentication.login")
+      html.login
     }
   }
 
