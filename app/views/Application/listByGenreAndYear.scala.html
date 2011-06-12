@@ -1,6 +1,12 @@
-@main(){
+@(
+albums:List[(models.Album,models.Artist)],
+genre:String,
+year:String
+)
 
-<h1>Top albums in &{genre} for ${year}</h1>
+@main(title = "Top albums"){
+
+<h1>Top albums in &{genre} for @year</h1>
 
 <!-- Album table -->
 @albumtable(albums:albums)

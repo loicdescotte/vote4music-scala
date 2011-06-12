@@ -2,14 +2,14 @@ package controllers
 
 import models._
 import play._
+import mvc._
 import play.data.validation.{Valid, Validation}
-import play.mvc._
 import play.i18n.Messages
 import java.io.File
-import views.Application._
-
 
 object Application extends Controller {
+
+  import views.Application._
 
   def index = html.index
 
@@ -178,6 +178,8 @@ trait AdminOnly extends Secure {
 }
 
 object Authentication extends Controller {
+
+  import views.Authentication._
 
   def login = Template
 

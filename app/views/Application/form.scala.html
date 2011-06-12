@@ -1,12 +1,12 @@
 @(
-album:Album,
-artist:Artist
+album:models.Album,
+artist:models.Artist
 )
-@main(){
+@main(title = "Album form"){
 
     <h1>Please write information about your favorite album</h1>
 
-    @form(controllers.Application.save){
+    @form(controllers.Application.save(album, artist){
         <input type="hidden" name="album.id" value="${album?.id}"/>
 
         <p class="field">
@@ -24,18 +24,18 @@ artist:Artist
             <select id="genre" name="album.genre">
                @models.Genres.values().map{ genre=>
                     @if(album.map(_.genre) == genre){
-                        <option value="${genre}" selected="selected">${genre.toString().toLowerCase()}</option>
+                        <option value="@genre" selected="selected">@genre.toLowerCase()</option>
                     }
                     else{
-                        <option value="${genre}">${genre.toString().toLowerCase()}</option>
+                        <option value="@genre">@genre.toLowerCase()</option>
                     }
                }
             </select>
         </p>
         <p class="field">
             <label for="release-date">Release date</label>
-            <input type="text" name="album.releaseDate" id="release-date" value="${album?.releaseDate?.format('yyyy-MM-dd')}" class="required"/>
-            <span class="error">${errors.forKey('album.releaseDate')}</span>
+            <input type="text" name="album.releaseDate" id="release-date" value="@album._1.map(_.releaseDate.format("yyyy-MM-dd"))" class="required"/>
+            <span class="error">@errors.get("album.releaseDate")</span>
         </p>
         <p class="field">
             <label for="cover">Cover</label>

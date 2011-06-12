@@ -12,8 +12,8 @@
     </head>
     <body>
         <header>
-          <h1><a href="/">@play.configuration.getProperty('application.name')</a> <span><a href="./">@title</a></span></h1>
-          @if session.get("username").equals("admin"){
+          <h1><a href="/">@play.configuration.getProperty("application.name")</a> <span><a href="./">@title</a></span></h1>
+          @if(session.get("username").equals("admin")){
             <a class="vm-admin" href="@{Authentication.logout()}">Logout</a>
           }
           else{
