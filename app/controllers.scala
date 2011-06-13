@@ -64,15 +64,7 @@ object Application extends Controller {
       Action(form)
     }
     else {
-      val artistId = Artist.findOrCreate(artist.name)
-      album.artist_id = artistId
-      //if new album (create mode)
-      albumId match {
-        case Some(id) =>  album.id= new Id[Long](id)
-                          Album.update(album)
-        case None => album.nbVotes = 0
-                     Album.insert(album)
-      }
+      //cover
       val cover = params.get("cover",classOf[File])
       if (cover != null) {
         val path: String = "/public/shared/covers/" + albumId
@@ -80,7 +72,17 @@ object Application extends Controller {
         val newFile: File = Play.getFile(path)
         if (newFile.exists) newFile.delete
         cover.renameTo(newFile)
-        Album.update(album)
+      }
+      //artist
+      val artistId = Artist.findOrCreate(artist.name)
+      album.artist_id = artistId
+
+      //if new album (create mode)
+      albumId match {
+        case Some(id) =>  album.id= new Id[Long](id)
+                          Album.update(album)
+        case None => album.nbVotes = 0
+                     Album.insert(album)
       }
       //forward to list action
       Action(list)
@@ -97,10 +99,11 @@ object Application extends Controller {
    * @param id
    */
   def vote(id: String) = {
-    Album.find("id = {c}").on("c" -> id).list().map(a => {
-      a.vote()
-      a.nbVotes
-    })
+    val album = Album.find("id = {c}").on("c" -> id).first()
+    album match {
+    case Some(a)=> a.vote()
+                  a.nbVotes
+    }
   }
 
 

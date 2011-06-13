@@ -55,9 +55,9 @@ object Album extends Magic[Album] {
            where al.name like {n}
            or ar.name like {n}
            order by al.nbVotes desc
-           limit 100
+           limit 100;
        """
-      ).on("n"->filter)
+      ).on("n"->likeFilter)
       .as( Album ~< Artist ^^ flatten * )
   }
 
@@ -67,7 +67,7 @@ def findAll:List[(Album,Artist)] =
            select * from Album al
            join Artist ar on al.artist_id = ar.id
            order by al.nbVotes desc
-           limit 100
+           limit 100;
        """
       ).as( Album ~< Artist ^^ flatten * )
 
@@ -103,7 +103,7 @@ def findAll:List[(Album,Artist)] =
            join Artist ar on al.artist_id = ar.id
            where al.genre = {g}
            order by al.nbVotes desc
-           limit 100
+           limit 100;
        """
     ).on("g"->genre.toUpperCase)
     .as( Album ~< Artist ^^ flatten *)
