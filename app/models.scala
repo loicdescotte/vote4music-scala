@@ -109,16 +109,14 @@ def findAll:List[(Album,Artist)] =
     ).on("g"->genre.toUpperCase)
     .as( Album ~< Artist ^^ flatten *)
     //filter with Scala collections example
-    //TODO filterByYear(albums, year)
-    return albums
+    filterByYear(albums, year)
   }
 
   /**
   * filter by year
   */
   def filterByYear (albums:List[(Album,Artist)], year:String):List[(Album,Artist)] = {
-	  //TODO albums.filter(x => formatYear.format(x.releaseDate).equals(year))
-    return albums
+	  albums.filter(x => formatYear.format(x._1.releaseDate).equals(year))
   }
 
 }

@@ -121,11 +121,11 @@ object Application extends Controller {
       albums = Album.filterByYear(albums, year)
     }
 
-    //TODO There is a bug in JSON serializer    
+    //TODO there is a bug in JSON serializer
      //if (request.format.equals("json"))
      //return Json(albums)
      
-    //TODO not working with 'xml' yet
+    //TODO templating not working with 'xml' yet
     //xml.listByApi(albums)
   }
 
