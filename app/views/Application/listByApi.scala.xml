@@ -1,4 +1,4 @@
-@(albums:List[models.Album])
+@(albums:Seq[models.Album])
 <?xml version='1.0' encoding='utf-8'?>
 <albums>   
 @albums.map { album =>    

@@ -1,0 +1,36 @@
+@(
+    implicit flash:play.mvc.Scope.Flash
+)
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+    <head>
+        <title>Login</title>		
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <link rel="stylesheet" type="text/css" media="screen" href="@asset("public/stylesheets/secure.css")"/>
+    </head>
+    <body>
+        <div id="login">
+
+        	@form(controllers.Authentication.authenticate()){
+
+        		@if(flash.get("error")){
+        			<p class="error">
+        				@flash.get("error")
+        			</p>
+        		}
+
+        		<p id="username-field">
+        			<label for="username">User name</label>
+        			<input type="text" name="username" id="username" value="@flash.get("username")" />
+        		</p>
+        		<p id="password-field">
+        			<label for="password">Password</label>
+        			<input type="password" name="password" id="password" value="" />
+        		</p>
+        		<p id="signin-field">
+        			<input type="submit" id="signin" value="Sign in" />
+        		</p>
+        	}
+        </div>
+    </body>
+</html>

@@ -2,37 +2,40 @@ package controllers
 
 import models._
 import play._
-import play.data.validation.{Valid, Validation}
-import play.mvc._
+import db.anorm.Id
+import mvc._
+import play.data.validation.Validation
 import play.i18n.Messages
-import templates.Template
 import java.io.File
-import views.Application._
-
 
 object Application extends Controller {
 
-  def index = Template
+  import views.Application._
+
+  def index = html.index()
 
   /**
    * Album list
    */
   def list() = {
-    Template('albums -> Album.all.fetch(100))
+    html.list(Album.findAll)
   }
-  
+
   /**
    * Album list with filter
    */
-  def search(filter: String) = {
-    Template("@Application.list", 'albums -> Album.findAll(filter))
+  def search = {
+    val filter = params.get("filter")
+    html.list(Album.search(filter))
   }
 
   /**
    * list albums by genre and year
    */
-  def listByGenreAndYear(genre: String, year: String) = {
-    Template('albums -> Album.findByGenreAndYear(genre, year), 'genre -> genre, 'year -> year)
+  def listByGenreAndYear = {
+    val genre = params.get("genre")
+    val year = params.get("year")
+    html.listByGenreAndYear(Album.findByGenreAndYear(genre, year), Messages.get(genre), year)
   }
 
   /**
@@ -51,22 +54,37 @@ object Application extends Controller {
    * @param artist
    * @param cover
    */
-  def save(@Valid album: Album, @Valid artist: Artist, cover: File) = {
+  def save(albumId:Option[Long]) = {
+    val album = params.get("album", classOf[Album])
+    val artist = params.get("artist", classOf[Artist])
     //forward if error
+    //FIXME errors not catched
+    Validation.valid("album",album)
+    Validation.valid("artist",artist)
     if (Validation.hasErrors) {
       Action(form)
     }
-    else{
-      album.artist = artist
-      album.replaceDuplicateArtist
-      album.save
+    else {
+      //cover
+      val cover = params.get("cover",classOf[File])
+      //FIXME cover upload not working
       if (cover != null) {
-        val path: String = "/public/shared/covers/" + album.id
+        val path: String = "/public/shared/covers/" + albumId
         album.hasCover = true
         val newFile: File = Play.getFile(path)
         if (newFile.exists) newFile.delete
         cover.renameTo(newFile)
-        album.save
+      }
+      //artist
+      val artistId = Artist.findOrCreate(artist.name)
+      album.artist_id = artistId
+
+      //if new album (create mode)
+      albumId match {
+        case Some(id) =>  album.id= new Id[Long](id)
+                          Album.update(album)
+        case None => album.nbVotes = 0
+                     Album.insert(album)
       }
       //forward to list action
       Action(list)
@@ -76,21 +94,20 @@ object Application extends Controller {
   /**
    * Just display the form
    */
-  def form = Template
+  def form = html.edit(None, None)
 
   /**
    * vote for an album
    * @param id
    */
   def vote(id: String) = {
-    Album.findById(id.toLong).map( a =>{
-         a.vote()
-         a.nbVotes 
+    val album = Album.find("id = {c}").on("c" -> id).first()
+    album match {
+    case Some(a)=> a.vote()
+                  a.nbVotes
     }
-    ).getOrElse(NotFound("No such album"))
   }
 
-  
 
   /**
    * List albums in xml or json format
@@ -98,30 +115,34 @@ object Application extends Controller {
    * @param genre
    * @param year
    */
-	def listByApi(genre:String, year:String) = {
-      var albums : List[Album] = null;
-      if (genre != null) {
-          albums = Album.find("byGenre", genre.toUpperCase()).fetch()
-      } else {
-          albums = Album.findAll()
-      }
-      if (year != null) {
-          albums = Album.filterByYear(albums, year)
-      }
+/*
+  def listByApi(genre: String, year: String) = {
+    var albums: Seq[Album] = null;
+    if (genre != null) {
+      albums = Album.find("genre like {g}").on("g" -> genre.toUpperCase).list()
+    } else {
+      albums = Album.find().list()
+    }
+    if (year != null) {
+      albums = Album.filterByYear(albums, year)
+    }
 
-	  //TODO There is a bug in JSON serializer
-	  /*
-      if (request.format.equals("json"))
-	  return Json(albums)
-	  */
-	  //TODO not working with 'xml' yet  
-	  html.listByApi(albums)
+    //TODO there is a bug in JSON serializer
+     //if (request.format.equals("json"))
+     //return Json(albums)
+     
+    //TODO templating not working with 'xml' yet
+    //xml.listByApi(albums)
   }
-	
+
+*/
+
 }
 
-
 object Admin extends Controller with AdminOnly {
+
+
+  import views.Application._
 
   /**
    * Log in
@@ -134,22 +155,19 @@ object Admin extends Controller with AdminOnly {
    * Delete album
    * @param id
    */
-  def delete(id: Long) = {
-    Album.findById(id.toLong).map( a => {
-        a.delete
-        Action(Application.list)
-    }
-    ).getOrElse(NotFound("No such album"))
+  def delete(id: Option[Long]) = {
+    id.map(id => Album.delete("id={c}").onParams(id).executeUpdate())
+    Action(Application.list)
   }
 
   /**
    * Update album
    * @param id
    */
-  def form(id: Long) = {
-    Album.findById(id.toLong).map( a =>
-       Template("@Application.form", 'album -> a)
-    ).getOrElse(NotFound("No such album"))
+  def form(id: Option[Long]) = {
+    val album = id.flatMap( id => Album.find("id={id}").onParams(id).first())
+    val artist = album.flatMap( album => Artist.find("id={id}").onParams(album.artist_id).first())
+    html.edit(album, artist)
   }
 }
 
@@ -177,20 +195,26 @@ trait AdminOnly extends Secure {
 
 object Authentication extends Controller {
 
-  def login = Template
+  import views.Authentication._
 
-  def logout = {
+  def login = {
+    html.login(flash)
+  }
+
+  def logout() = {
     session.clear()
     Action(Admin.login)
   }
 
-  def authenticate(username: String, password: String) = {
-    Play.configuration.getProperty("application.admin").equals(username) &&
+  def authenticate() = {
+      val username = params.get("username")
+      val password = params.get("password")
+      Play.configuration.getProperty("application.admin").equals(username) &&
       Play.configuration.getProperty("application.adminpwd").equals(password) match {
       case true => session.put("username", username)
-      Action(Application.index)
-      case false => flash.error(Messages.get("error.login"))      
-      Template("@Authentication.login")
+                   Action(Application.index)
+      case false => flash.error(Messages.get("error.login"))
+                    html.login(flash)
     }
   }
 

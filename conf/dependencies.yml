@@ -1,7 +1,4 @@
 # Application dependencies
      
 require:
-    - play -> play 1.2.2RC1
-    - play -> html5validation 1.2
-#    - play -> secure
     - play -> scala 0.9.1

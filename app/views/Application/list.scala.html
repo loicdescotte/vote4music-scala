@@ -1,0 +1,21 @@
+@(entries:List[(models.Album,models.Artist)])
+
+@main(title = "Albums"){
+
+    <h1>Album list</h1>
+
+    @form(controllers.Application.search){
+        <input type="text" id="filter" class="vm-table-filter-input" name="filter"/>
+        <input type="submit" value="Search albums" class="button" id="submitFilter">
+    }
+
+    <!-- Album table -->
+    @albumtable(entries=entries)
+
+    <ul class="buttons">
+        <a href="/" class="button">Back</a>
+        <a href="/album/new" class="button">New album</a>
+    </ul>
+}
+
+

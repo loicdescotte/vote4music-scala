@@ -1,0 +1,66 @@
+@(album:Option[models.Album] = None, artist:Option[models.Artist])(implicit errors:Map[String,play.data.validation.Error])
+
+@main(title = "Album form"){
+
+    <h1>Please write information about your favorite album</h1>
+
+    @form(controllers.Application.save(album.map(_.id))) {
+
+        <input type="hidden" name="album.id" value="@album.map(_.id)"/>
+
+        <p class="field">
+            <label for="name">Album Name:</label>
+            <input type="text" name="album.name" id="name" value="@album.map(_.name)" class="required"/>
+            <span class="error">@errors.get("album.name")</span>
+        </p>
+        <p class="field">
+            <label for="artist">Artist:</label>
+            <input type="text" name="artist.name" id="artist" value="@artist.map(_.name)" class="required"/>
+            <span class="error">@errors.get("artist.name")</span>
+        </p>
+        <p class="field">
+            <label for="genre">Genre:</label>
+            <select id="genre" name="album.genre">
+               @models.Genres.values().map{ genre=>
+                    @if(album.map(_.genre) == Option(genre)){
+                        <option value="@genre" selected="selected">@genre.toLowerCase()</option>
+                    } else{
+                        <option value="@genre">@genre.toLowerCase()</option>
+                    }
+               }
+            </select>
+        </p>
+        <p class="field">
+            <label for="release-date">Release date</label>
+            <input type="text" name="album.releaseDate" id="release-date" value="@album.map(_.releaseDate.format("yyyy-MM-dd"))" class="required"/>
+            <span class="error">@errors.get("album.releaseDate")</span>
+        </p>
+        <p class="field">
+            <label for="cover">Cover</label>
+            <input type="file" id="cover" name="cover" accept="gif,jpg,jpeg,png,bmp"/>
+            @album.map{ a=>
+                @if(a.hasCover){
+                    <br/>
+                    <img src="@asset("public/shared/covers")"/@album.map(_.id)" alt="no cover" widht="50px" height="50px"/>
+                }
+            }
+        </p>
+
+        <p class="buttons">
+            <a href="/albums" class="button">Cancel</a>
+            <span>or</span>
+            <input type="submit" class="button" value="Save this album"  id="saveAlbum"/>
+        </p>
+    }
+
+    <script src="@asset("public/javascripts/jquery.validate.js")" type="text/javascript"></script>
+    <script>
+        $(document).ready(function() {
+            $("#form").validate();
+        });
+        $(function() {
+            // those stuff needs to be wrapped in a dom-ready callback. (same as $(document).ready)
+            $("#release-date").datepicker({dateFormat:'yy-mm-dd', showAnim:'fadeIn'});
+        });
+    </script>
+}
