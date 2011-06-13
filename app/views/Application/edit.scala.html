@@ -39,9 +39,11 @@
         <p class="field">
             <label for="cover">Cover</label>
             <input type="file" id="cover" name="cover" accept="gif,jpg,jpeg,png,bmp"/>
-            @if(album.map(_.hasCover)){
-                <br/>
-                <img src="@asset("public/shared/covers")"/@album.map(_.id)" alt="no cover" widht="50px" height="50px"/>
+            @album.map{ a=>
+                @if(a.hasCover){
+                    <br/>
+                    <img src="@asset("public/shared/covers")"/@album.map(_.id)" alt="no cover" widht="50px" height="50px"/>
+                }
             }
         </p>
 
