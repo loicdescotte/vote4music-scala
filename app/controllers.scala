@@ -2,6 +2,7 @@ package controllers
 
 import models._
 import play._
+import db.anorm.Id
 import mvc._
 import play.data.validation.Validation
 import play.i18n.Messages
@@ -67,7 +68,8 @@ object Application extends Controller {
       album.artist_id = artistId
       //if new album (create mode)
       albumId match {
-        case Some(id) => Album.update(album)
+        case Some(id) =>  album.id= new Id[Long](id)
+                          Album.update(album)
         case None => album.nbVotes = 0
                      Album.insert(album)
       }
