@@ -8,7 +8,6 @@ import play.data.validation.Required
 import java.text.SimpleDateFormat
 import java.util.Date
 
-
 case class Album(
              var id:Id[Long],
              @Required var name: String,
@@ -35,7 +34,7 @@ case class Artist(var id:Id[Long], @Required var name: String){
 }
 
 object Genres {
-  def values() = Array("ROCK", "POP", "BLUES", "JAZZ", "HIP-HOP", "WORLD", "OTHER")
+  def values() = List("ROCK", "POP", "BLUES", "JAZZ", "HIP-HOP", "WORLD", "OTHER")
 }
 
 //Query object for albums

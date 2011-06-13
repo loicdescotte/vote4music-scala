@@ -22,10 +22,9 @@
             <label for="genre">Genre:</label>
             <select id="genre" name="album.genre">
                @models.Genres.values().map{ genre=>
-                    @if(album.map(_.genre) == genre){
+                    @if(album.map(_.genre) == Option(genre)){
                         <option value="@genre" selected="selected">@genre.toLowerCase()</option>
-                    }
-                    else{
+                    } else{
                         <option value="@genre">@genre.toLowerCase()</option>
                     }
                }
