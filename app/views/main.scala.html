@@ -5,8 +5,7 @@
     <head>
         <title>Vote4Music</title>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-        <link rel="stylesheet" type="text/css" media="screen" href="@asset("public/stylesheets/style.css")" />
-        <link rel="stylesheet" type="text/css" media="screen" href="@asset("public/stylesheets/south-street/jquery-ui-1.7.2.custom.css")" />
+        <link rel="stylesheet" type="text/css" media="screen" href="@asset("public/stylesheets/main.css")" />
         <script src="@asset("public/javascripts/jquery-1.4.min.js")" type="text/javascript" charset="utf-8"></script>
         <script src="@asset("public/javascripts/jquery-ui-1.7.2.custom.min.js")" type="text/javascript" charset="utf-8"></script>
         <script src="@asset("public/javascripts/jquery.editinplace.packed.js")" type="text/javascript" charset="utf-8"></script>
@@ -14,10 +13,9 @@
     <body>
         <header>
           <h1><a href="/">Vote4Music</a> <span><a href="./">@title</a></span></h1>
-          @if(Application.session.get("username").equals("admin")){
+          @if(Option(Application.session.get("username")).map(_.equals("admin"))){
             <a class="vm-admin" href="@action(Authentication.logout())">Logout</a>
-          }
-          else{
+          } else{
             <a class="vm-admin" href="/admin/login">Log as admin</a>
           }
         </header>

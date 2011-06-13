@@ -3,16 +3,15 @@ package controllers
 import models._
 import play._
 import mvc._
-import play.data.validation.{Valid, Validation}
+import play.data.validation.Validation
 import play.i18n.Messages
 import java.io.File
-import javax.swing.text.html.HTML
 
 object Application extends Controller {
 
   import views.Application._
 
-  def index = html.index
+  def index = html.index()
 
   /**
    * Album list
@@ -191,7 +190,9 @@ object Authentication extends Controller {
 
   import views.Authentication._
 
-  def login = Template
+  def login = {
+    html.login(flash)
+  }
 
   def logout() = {
     session.clear()
@@ -206,7 +207,7 @@ object Authentication extends Controller {
       case true => session.put("username", username)
                    Action(Application.index)
       case false => flash.error(Messages.get("error.login"))
-                    html.login
+                    html.login(flash)
     }
   }
 

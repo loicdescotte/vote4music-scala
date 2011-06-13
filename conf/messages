@@ -10,12 +10,5 @@ JAZZ=Jazz
 BLUES=Blues
 OTHER=Other
 
-
-#Secure
-secure.username=User name
-secure.password=Password
-secure.remember=Remember me
-secure.signin=Sign in
-
 #Error messages
 error.login=Oops, bad user name or password

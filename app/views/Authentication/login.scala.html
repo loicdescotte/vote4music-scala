@@ -1,6 +1,5 @@
 @(
-    implicit
-    flash:play.mvc.Scope.Flash
+    implicit flash:play.mvc.Scope.Flash
 )
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
@@ -21,19 +20,15 @@
         		}
 
         		<p id="username-field">
-        			<label for="username">&{'secure.username'}</label>
-        			<input type="text" name="username" id="username" value="${flash.username}" />
+        			<label for="username">User name</label>
+        			<input type="text" name="username" id="username" value="@flash.get("username")" />
         		</p>
         		<p id="password-field">
-        			<label for="password">&{'secure.password'}</label>
+        			<label for="password">Password</label>
         			<input type="password" name="password" id="password" value="" />
         		</p>
-        		<p id="remember-field">
-        			<input type="checkbox" name="remember" id="remember" value="true" ${flash.remember ? 'checked="true"' : ''} />
-        			<label for="remember">&{'secure.remember'}</label>
-        		</p>
         		<p id="signin-field">
-        			<input type="submit" id="signin" value="&{'secure.signin'}" />
+        			<input type="submit" id="signin" value="Sign in" />
         		</p>
         	}
         </div>
