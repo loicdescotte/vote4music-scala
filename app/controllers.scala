@@ -6,6 +6,7 @@ import mvc._
 import play.data.validation.{Valid, Validation}
 import play.i18n.Messages
 import java.io.File
+import javax.swing.text.html.HTML
 
 object Application extends Controller {
 
@@ -23,14 +24,17 @@ object Application extends Controller {
   /**
    * Album list with filter
    */
-  def search(filter: String) = {
+  def search = {
+    val filter = params.get("filter")
     html.list(Album.search(filter))
   }
 
   /**
    * list albums by genre and year
    */
-  def listByGenreAndYear(genre: String, year: String) = {
+  def listByGenreAndYear = {
+    val genre = params.get("genre")
+    val year = params.get("year")
     html.listByGenreAndYear(Album.findByGenreAndYear(genre, year), genre, year)
   }
 
@@ -50,22 +54,27 @@ object Application extends Controller {
    * @param artist
    * @param cover
    */
-  def save(@Valid album: Album, @Valid artist: Artist, cover: File) = {
+  def save(albumId:Option[Long]) = {
+    val album = params.get("album", classOf[Album])
+    val artist = params.get("artist", classOf[Artist])
     //forward if error
+    Validation.valid("album",album)
+    Validation.valid("artist",artist)
     if (Validation.hasErrors) {
       Action(form)
     }
     else {
-      val artistId = Artist.findOrCreate(artist)
+      val artistId = Artist.findOrCreate(artist.name)
       album.artist_id = artistId
       //if new album (create mode)
-      if (album.id == null) {
-        album.nbVotes = 0
-        Album.insert(album)
+      albumId match {
+        case Some(id) => Album.update(album)
+        case None => album.nbVotes = 0
+                     Album.insert(album)
       }
-      //album.replaceDuplicateArtist
+      val cover = params.get("cover",classOf[File])
       if (cover != null) {
-        val path: String = "/public/shared/covers/" + album.id
+        val path: String = "/public/shared/covers/" + albumId
         album.hasCover = true
         val newFile: File = Play.getFile(path)
         if (newFile.exists) newFile.delete
@@ -80,7 +89,7 @@ object Application extends Controller {
   /**
    * Just display the form
    */
-  def form = html.form
+  def form = html.edit(None, None)
 
   /**
    * vote for an album
@@ -126,6 +135,9 @@ object Application extends Controller {
 
 object Admin extends Controller with AdminOnly {
 
+
+  import views.Application._
+
   /**
    * Log in
    */
@@ -137,21 +149,19 @@ object Admin extends Controller with AdminOnly {
    * Delete album
    * @param id
    */
-  def delete(id: Long) = {
-    Album.find("id = {c}").on("c" -> id).list().map(a => {
-      Album.delete("id={c}").onParams(id).executeUpdate()
-      Action(Application.list)
-    })
+  def delete(id: Option[Long]) = {
+    id.map(id => Album.delete("id={c}").onParams(id).executeUpdate())
+    Action(Application.list)
   }
 
   /**
    * Update album
    * @param id
    */
-  def form(id: Long) = {
-    Album.find("id = {c}").on("c" -> id).list().map(a =>
-      Template("@Application.form", 'album -> a)
-    )
+  def form(id: Option[Long]) = {
+    val album = id.flatMap( id => Album.find("id={id}").onParams(id).first())
+    val artist = album.flatMap( album => Artist.find("id={id}").onParams(album.artist_id).first())
+    html.edit(album, artist)
   }
 }
 
@@ -188,13 +198,15 @@ object Authentication extends Controller {
     Action(Admin.login)
   }
 
-  def authenticate(username: String, password: String) = {
-    Play.configuration.getProperty("application.admin").equals(username) &&
+  def authenticate() = {
+      val username = params.get("username")
+      val password = params.get("password")
+      Play.configuration.getProperty("application.admin").equals(username) &&
       Play.configuration.getProperty("application.adminpwd").equals(password) match {
       case true => session.put("username", username)
-      Action(Application.index)
+                   Action(Application.index)
       case false => flash.error(Messages.get("error.login"))
-      html.login
+                    html.login
     }
   }
 

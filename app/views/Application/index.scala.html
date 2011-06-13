@@ -1,4 +1,4 @@
-@main(){
+@main(title = "vote4Music"){
 
     <h1>Welcome on vote4Music</h1>
 
@@ -8,10 +8,10 @@
     <h2><a href="/album/new">Add album</a></h2>
 
     <h2>Top rated:</h2>
-    @form(controllers.Application.listByGenreAndYear()) {
+    @form(controllers.Application.listByGenreAndYear) {
     <label for="year">Release Year</label>
     <select id="year" name="year">
-        @controllers.Application.yearsToDisplay().map{ year=>
+        @controllers.Application.yearsToDisplay.map{ year=>
             <option  value="@year">@year</option>
         }
     </select>

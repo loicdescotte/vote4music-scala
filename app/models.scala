@@ -19,17 +19,6 @@ case class Album(
 			 var artist_id: Long	
 			 ) {
 
-  /*
-   * Remove duplicate artist
-     * @return found duplicate artist if any exists
-     
-  def replaceDuplicateArtist() = {
-    val existingArtist = Artist.find("name like {n}").on("n"->filter).first.map( a =>
-        //Artist name is unique
-	    artist = a
-    )  
-  }*/
-
   /**
    * Vote for an album
    */
@@ -39,9 +28,10 @@ case class Album(
   }
 }
 
-
-case class Artist(var id:Id[Long],  @Required var name: String){
-
+case class Artist(var id:Id[Long], @Required var name: String){
+  def this(name:String) = {
+    this(null,name)
+  }
 }
 
 object Genres {
@@ -136,14 +126,15 @@ def findAll:List[(Album,Artist)] =
 //Query object for artists
 object Artist extends Magic[Artist] {
 
-  def findOrCreate(artist:Artist):Long= {
-      find("name = {n}").on("n"->artist.name).first() match{       
+  def findOrCreate(artistName:String):Long= {
+      find("name = {n}").on("n"->artistName).first() match{
         case Some(a:Artist) => a.id
         case None => {
+           val artist = new Artist(artistName)
            insert(artist)
            //recursive call
-           findOrCreate(artist)
-           //find("name = {n}").on("n"->artist.name).single().id
+           findOrCreate(artist.name)
+           //find("name = {n}").on("n"->artistName).single().id
         }
       }
   }

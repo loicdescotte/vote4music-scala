@@ -38,7 +38,7 @@
                     <span class="cover"><a href="#">Show cover</a></span>
                 }
             </td>
-            <td>@album._1.map(_.releaseDate.format("yyyy-MM-dd"))</td>
+            <td>@Option(album._1).map(_.releaseDate.format("yyyy-MM-dd"))</td>
             <td>@album._1.genre</td>
             <td>
                 <span id="nbVotes@album._1.id">@album.nbVotes</span>

@@ -1,22 +1,21 @@
-@(
-album:models.Album,
-artist:models.Artist
-)
+@(album:Option[models.Album] = None, artist:Option[models.Artist])(implicit errors:Map[String,play.data.validation.Error])
+
 @main(title = "Album form"){
 
     <h1>Please write information about your favorite album</h1>
 
-    @form(controllers.Application.save(album, artist){
-        <input type="hidden" name="album.id" value="${album?.id}"/>
+    @form(controllers.Application.save(album.flatMap(_.id.get))) {
+
+        <input type="hidden" name="album.id" value="@album.map(_.id)"/>
 
         <p class="field">
             <label for="name">Album Name:</label>
-            <input type="text" name="@album.name" id="name" value="@album.map(_.name)" class="required"/>
+            <input type="text" name="album.name" id="name" value="@album.map(_.name)" class="required"/>
             <span class="error">@errors.get("album.name")</span>
         </p>
         <p class="field">
             <label for="artist">Artist:</label>
-            <input type="text" name="@artist.name" id="artist" value="@artist.map(_.name)" class="required"/>
+            <input type="text" name="artist.name" id="artist" value="@artist.map(_.name)" class="required"/>
             <span class="error">@errors.get("artist.name")</span>
         </p>
         <p class="field">
@@ -34,13 +33,13 @@ artist:models.Artist
         </p>
         <p class="field">
             <label for="release-date">Release date</label>
-            <input type="text" name="album.releaseDate" id="release-date" value="@album._1.map(_.releaseDate.format("yyyy-MM-dd"))" class="required"/>
+            <input type="text" name="album.releaseDate" id="release-date" value="@album.map(_.releaseDate.format("yyyy-MM-dd"))" class="required"/>
             <span class="error">@errors.get("album.releaseDate")</span>
         </p>
         <p class="field">
             <label for="cover">Cover</label>
             <input type="file" id="cover" name="cover" accept="gif,jpg,jpeg,png,bmp"/>
-            @if(album.hasCover){
+            @if(album.map(_.hasCover)){
                 <br/>
                 <img src="@asset("public/shared/covers")"/@album.map(_.id)" alt="no cover" widht="50px" height="50px"/>
             }
