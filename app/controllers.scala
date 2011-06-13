@@ -35,7 +35,7 @@ object Application extends Controller {
   def listByGenreAndYear = {
     val genre = params.get("genre")
     val year = params.get("year")
-    html.listByGenreAndYear(Album.findByGenreAndYear(genre, year), genre, year)
+    html.listByGenreAndYear(Album.findByGenreAndYear(genre, year), Messages.get(genre), year)
   }
 
   /**
@@ -66,6 +66,7 @@ object Application extends Controller {
     else {
       //cover
       val cover = params.get("cover",classOf[File])
+      //FIXME cover upload not working
       if (cover != null) {
         val path: String = "/public/shared/covers/" + albumId
         album.hasCover = true
