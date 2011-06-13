@@ -1,4 +1,5 @@
 @(title:String, current:String = "index")(body: => Html)
+@import controllers._
 <!DOCTYPE html>
 <html>
     <head>
@@ -12,9 +13,9 @@
     </head>
     <body>
         <header>
-          <h1><a href="/">@play.configuration.getProperty("application.name")</a> <span><a href="./">@title</a></span></h1>
-          @if(session.get("username").equals("admin")){
-            <a class="vm-admin" href="@{Authentication.logout()}">Logout</a>
+          <h1><a href="/">Vote4Music</a> <span><a href="./">@title</a></span></h1>
+          @if(Application.session.get("username").equals("admin")){
+            <a class="vm-admin" href="@action(Authentication.logout())">Logout</a>
           }
           else{
             <a class="vm-admin" href="/admin/login">Log as admin</a>

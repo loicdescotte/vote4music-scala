@@ -193,7 +193,7 @@ object Authentication extends Controller {
 
   def login = Template
 
-  def logout = {
+  def logout() = {
     session.clear()
     Action(Admin.login)
   }

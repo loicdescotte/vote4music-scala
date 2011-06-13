@@ -1,5 +1,5 @@
 @(
-albums:List[(models.Album,models.Artist)],
+entries:List[(models.Album,models.Artist)],
 genre:String,
 year:String
 )
@@ -9,7 +9,7 @@ year:String
 <h1>Top albums in &{genre} for @year</h1>
 
 <!-- Album table -->
-@albumtable(albums:albums)
+@albumtable(entries=entries)
 
 <ul id="links">
     <li><a href="/" class="button">Back</a></li>

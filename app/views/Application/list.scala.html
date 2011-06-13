@@ -1,4 +1,4 @@
-@(albums:List[(models.Album,models.Artist)])
+@(entries:List[(models.Album,models.Artist)])
 
 @main(title = "Albums"){
 
@@ -10,7 +10,7 @@
     }
 
     <!-- Album table -->
-    @albumtable(albums:albums)
+    @albumtable(entries=entries)
 
     <ul class="buttons">
         <a href="/" class="button">Back</a>

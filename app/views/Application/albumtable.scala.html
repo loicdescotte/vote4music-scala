@@ -1,4 +1,6 @@
-@(albums:List[(models.Album,models.Artist)])
+@(entries:List[(models.Album,models.Artist)])
+
+@import controllers._
 
 <script src="@asset("public/javascripts/albumtable.js")" type="text/javascript" charset="utf-8"></script>
 <script src="@asset("public/javascripts/jquery.bt.min.js")" type="text/javascript" charset="utf-8"></script>
@@ -23,31 +25,31 @@
             <th>Release date</th>
             <th>Genre</th>
             <th>Number of votes</th>
-            @if(session.get("username").equals("admin")){
+            @if(Application.session.get("username").equals("admin")){
                 <th>Manage</th>
             }
         </tr>
     </thead>
 
-    @albums.map { album =>
-        <tr id="album-${album.id}">
-            <td>@album._1.name</td>
-            <td>@album._2.name</td>
+    @(entries.map { entry => val album = entry._1; val artist = entry._2
+        <tr id="album-@entry._1.id">
+            <td>@album.name</td>
+            <td>@artist.name</td>
             <td>
-                @if(album._1.hasCover){
+                @if(entry._1.hasCover){
                     <span class="cover"><a href="#">Show cover</a></span>
                 }
             </td>
-            <td>@Option(album._1).map(_.releaseDate.format("yyyy-MM-dd"))</td>
-            <td>@album._1.genre</td>
+            <td>@Option(entry._1).map(_.releaseDate.format("yyyy-MM-dd"))</td>
+            <td>@entry._1.genre</td>
             <td>
-                <span id="nbVotes@album._1.id">@album.nbVotes</span>
-                <a id="@album._1.id-clickVote" class="voteLink" href="#">Vote for it!</a>
+                <span id="nbVotes@entry._1.id">@entry._1.nbVotes</span>
+                <a id="@entry._1.id-clickVote" class="voteLink" href="#">Vote for it!</a>
             </td>
-            @if(session.get("username").equals("admin")){
-                <td><a href="@action(controllers.Admin.form(album.id()))">Update</a>&nbsp;<a href="@action(controllers.Admin.delete(album.id()))">Delete</a></td>
+            @if(Application.session.get("username").equals("admin")){
+                <td><a href="@action(Admin.form(entry.id()))">Update</a>&nbsp;<a href="@action(Admin.delete(entry_1.id()))">Delete</a></td>
             }
         </tr>
-    }
+    })
 </table>
 <div id="tips">Tip : Mouse hover an album to see its cover</div>

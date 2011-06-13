@@ -1,5 +1,8 @@
+@(
+    implicit
+    flash:play.mvc.Scope.Flash
+)
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
     <head>
         <title>Login</title>		
@@ -9,11 +12,11 @@
     <body>
         <div id="login">
 
-        	@form(authenticate()){
+        	@form(controllers.Authentication.authenticate()){
 
-        		@if(flash.error){
+        		@if(flash.get("error")){
         			<p class="error">
-        				@flash.error
+        				@flash.get("error")
         			</p>
         		}
 
