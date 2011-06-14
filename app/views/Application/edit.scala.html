@@ -4,6 +4,7 @@
 
     <h1>Please write information about your favorite album</h1>
 
+    <div id="form">
     @form(controllers.Application.save(album.map(_.id))) {
 
         <input type="hidden" name="album.id" value="@album.map(_.id)"/>
@@ -52,11 +53,12 @@
             <input type="submit" class="button" value="Save this album"  id="saveAlbum"/>
         </p>
     }
+    </div>
 
     <script src="@asset("public/javascripts/jquery.validate.js")" type="text/javascript"></script>
     <script>
         $(document).ready(function() {
-            $("#form").validate();
+            $("#form form").validate();
         });
         $(function() {
             // those stuff needs to be wrapped in a dom-ready callback. (same as $(document).ready)

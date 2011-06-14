@@ -2,7 +2,7 @@ package controllers
 
 import models._
 import play._
-import db.anorm.Id
+import db.anorm._
 import mvc._
 import play.data.validation.Validation
 import play.i18n.Messages
@@ -62,19 +62,12 @@ object Application extends Controller {
     Validation.valid("album",album)
     Validation.valid("artist",artist)
     if (Validation.hasErrors) {
-      Action(form)
+      html.edit(Some(album), Some(artist))
     }
     else {
       //cover
       val cover = params.get("cover",classOf[File])
-      //FIXME cover upload not working
-      if (cover != null) {
-        val path: String = "/public/shared/covers/" + albumId
-        album.hasCover = true
-        val newFile: File = Play.getFile(path)
-        if (newFile.exists) newFile.delete
-        cover.renameTo(newFile)
-      }
+
       //artist
       val artistId = Artist.findOrCreate(artist.name)
       album.artist_id = artistId
@@ -85,6 +78,20 @@ object Application extends Controller {
                           Album.update(album)
         case None => album.nbVotes = 0
                      Album.insert(album)
+      }
+      //cover
+      if (cover != null) {
+        val path: String = "/public/shared/covers/" + albumId
+        album.hasCover = true
+        val newFile: File = Play.getFile(path)
+        if (newFile.exists) newFile.delete
+        cover.renameTo(newFile)
+        //if create (no id)
+        album.id = Option(album.id).getOrElse(
+          //last id in database --> TODO find a better way
+          new Id[Long](SQL("select min(a.id) as i from Album a").apply().head[Long]("i"))
+        )
+        Album.update(album)
       }
       //forward to list action
       Action(list)
