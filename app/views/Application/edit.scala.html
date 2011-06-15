@@ -42,7 +42,7 @@
             @album.map{ a=>
                 @if(a.hasCover){
                     <br/>
-                    <img src="@asset("public/shared/covers")"/@album.map(_.id)" alt="no cover" widht="50px" height="50px"/>
+                    <img src="@asset("public/shared/covers")/@album.map(_.id)" alt="no cover" widht="50px" height="50px"/>
                 }
             }
         </p>
@@ -58,7 +58,9 @@
     <script src="@asset("public/javascripts/jquery.validate.js")" type="text/javascript"></script>
     <script>
         $(document).ready(function() {
-            $("#form form").validate();
+            var form = $("#form form");
+            form.validate();
+            form.attr('enctype', "multipart/form-data");
         });
         $(function() {
             // those stuff needs to be wrapped in a dom-ready callback. (same as $(document).ready)

@@ -58,7 +58,6 @@ object Application extends Controller {
     val album = params.get("album", classOf[Album])
     val artist = params.get("artist", classOf[Artist])
     //forward if error
-    //FIXME errors not catched
     Validation.valid("album",album)
     Validation.valid("artist",artist)
     if (Validation.hasErrors) {
@@ -66,7 +65,7 @@ object Application extends Controller {
     }
     else {
       //cover
-      val cover = params.get("cover",classOf[File])
+      val cover = Option(params.get("cover",classOf[File]))
 
       //artist
       val artistId = Artist.findOrCreate(artist.name)
@@ -80,19 +79,24 @@ object Application extends Controller {
                      Album.insert(album)
       }
       //cover
-      if (cover != null) {
-        val path: String = "/public/shared/covers/" + albumId
-        album.hasCover = true
-        val newFile: File = Play.getFile(path)
-        if (newFile.exists) newFile.delete
-        cover.renameTo(newFile)
-        //if create (no id)
-        album.id = Option(album.id).getOrElse(
-          //last id in database --> TODO find a better way
-          new Id[Long](SQL("select min(a.id) as i from Album a").apply().head[Long]("i"))
-        )
-        Album.update(album)
-      }
+      cover.map( c => {
+          //if create (no id)
+          val id:Long = albumId.getOrElse(
+            //last id in database
+            new Id[Long](SQL("select max(a.id) as i from Album a").apply().head[Long]("i"))
+          )
+          albumId match {
+            case None => album.id=new Id[Long](id)
+            case _ => {}
+          }
+          //save file
+          val path: String = "/public/shared/covers/" + id
+          album.hasCover = true
+          val newFile: File = Play.getFile(path)
+          if (newFile.exists) newFile.delete
+          c.renameTo(newFile)
+          Album.update(album)
+      })
       //forward to list action
       Action(list)
     }
