@@ -209,7 +209,7 @@ object Authentication extends Controller {
   import views.Authentication._
 
   def login = {
-    html.login(flash)
+    html.login()
   }
 
   def logout() = {
@@ -225,7 +225,7 @@ object Authentication extends Controller {
       case true => session.put("username", username)
                    Action(Application.index)
       case false => flash.error(Messages.get("error.login"))
-                    html.login(flash)
+                    html.login()
     }
   }
 
