@@ -5,9 +5,9 @@
     <h1>Please write information about your favorite album</h1>
 
     <div id="form">
-    @form(controllers.Application.save(album.map(_.id))) {
+    @form(controllers.Application.save(album.flatMap(_.id.get))) {
 
-        <input type="hidden" name="album.id" value="@album.map(_.id)"/>
+        <input type="hidden" name="album.id" value="@album.map(_.id.apply())"/>
 
         <p class="field">
             <label for="name">Album Name:</label>

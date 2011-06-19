@@ -1,5 +1,5 @@
 *{ You may clean your browsers cookies to run this test }*
-#{fixture delete:'all', load:'data.yml' /}
+#{fixture 'FreshDatabase' /}
 #{selenium}
 // Open the home page, and check that no error occured
 open('/')

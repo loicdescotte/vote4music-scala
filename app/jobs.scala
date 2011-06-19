@@ -10,7 +10,7 @@ class PopulateOnStart extends Job {
 	override def doJob={
 		// Check if the database is empty
 		if(Album.count().single() == 0) {
-		            Yaml[List[Any]]("init-data.yml").foreach {
+		            Yaml[List[Any]]("data.yml").foreach {
 			                _ match {
 			                    case al:Album =>  Album.create(al)
 			                    case ar:Artist => Artist.create(ar)

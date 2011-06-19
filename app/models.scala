@@ -11,7 +11,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 
 case class Album(
-             var id:Id[Long],
+             var id:Pk[Long],
              @Required var name: String,
              @Required var releaseDate: Date,
              var genre: String,
@@ -19,6 +19,10 @@ case class Album(
              var hasCover: Boolean = false,
 			 var artist_id: Long	
 			 ) {
+
+  def this(name:String, date:Date, genre:String, hasCover: Boolean){
+    this(NotAssigned, name, date, genre, 0L, hasCover, 0L)
+  }
 
   /**
    * Vote for an album
@@ -30,7 +34,7 @@ case class Album(
 }
 
 
-case class Artist(var id:Id[Long], @Required var name: String){
+case class Artist(var id:Pk[Long], @Required var name: String){
   def this(name:String) = {
     this(null,name)
   }
@@ -129,13 +133,12 @@ object Artist extends Magic[Artist] {
 
   def findOrCreate(artistName:String):Long= {
       find("name = {n}").on("n"->artistName).first() match{
-        case Some(a:Artist) => a.id
+        case Some(a:Artist) => a.id.apply()
         case None => {
            val artist = new Artist(artistName)
            insert(artist)
            //recursive call
            findOrCreate(artist.name)
-           //find("name = {n}").on("n"->artistName).single().id
         }
       }
   }
