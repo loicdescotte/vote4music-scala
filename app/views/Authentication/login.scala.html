@@ -1,4 +1,4 @@
-@import controllers.Authentication
+@(flash:play.mvc.Scope.Flash=controllers.Authentication.flash)
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
     <head>
@@ -11,15 +11,15 @@
 
         	@form(controllers.Authentication.authenticate()){
 
-        		@if(Authentication.flash.get("error")){
+        		@if(flash.get("error")){
         			<p class="error">
-        				@Authentication.flash.get("error")
+        				@flash.get("error")
         			</p>
         		}
 
         		<p id="username-field">
         			<label for="username">User name</label>
-        			<input type="text" name="username" id="username" value="@Authentication.flash.get("username")" />
+        			<input type="text" name="username" id="username" value="@flash.get("username")" />
         		</p>
         		<p id="password-field">
         			<label for="password">Password</label>
