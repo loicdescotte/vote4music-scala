@@ -41,7 +41,7 @@ object Application extends Controller {
   /**
    * Years of albums releases
    */
-  def yearsToDisplay: List[Int] = {
+  def yearsToDisplay = {
     val first = Album.firstAlbumYear
     val last = Album.lastAlbumYear
     first.to(last).toList.reverse
@@ -81,7 +81,7 @@ object Application extends Controller {
       //cover
       cover.map( c => {
           //if create (no id)
-          val id:Long = albumId.getOrElse(
+          val id: Long = albumId.getOrElse(
             //last id in database
             new Id[Long](SQL("select max(a.id) as i from Album a").apply().head[Long]("i"))
           )
@@ -90,9 +90,9 @@ object Application extends Controller {
             case _ => {}
           }
           //save file
-          val path: String = "/public/shared/covers/" + id
+          val path = "/public/shared/covers/" + id
           album.hasCover = true
-          val newFile: File = Play.getFile(path)
+          val newFile = Play.getFile(path)
           if (newFile.exists) newFile.delete
           c.renameTo(newFile)
           Album.update(album)

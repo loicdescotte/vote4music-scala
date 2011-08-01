@@ -48,13 +48,13 @@ object Genres {
 //Query object for albums
 object Album extends Magic[Album] {
 
-  private val formatYear: SimpleDateFormat = new SimpleDateFormat("yyyy")
+  private val formatYear = new SimpleDateFormat("yyyy")
 
   /**
    * @param filter
    * @return found albums
    */
-  def search(filter: String):List[(Album,Artist)] = {
+  def search(filter: String) = {
       val likeFilter = "%".concat(filter).concat("%")
       SQL(
        """
@@ -69,7 +69,7 @@ object Album extends Magic[Album] {
       .as( Album ~< Artist ^^ flatten * )
   }
 
-def findAll:List[(Album,Artist)] = 
+def findAll =
       SQL(
        """
            select * from Album al
@@ -83,7 +83,7 @@ def findAll:List[(Album,Artist)] =
   /**
    *  first album year
    */                                                                                                                                   
-  def firstAlbumYear: Int = {	
+  def firstAlbumYear = {
     SQL("select min(a.releaseDate) from Album a").apply().head match {
       case Row(date:Date) => formatYear.format(date).toInt
       case _ => 1990
@@ -93,7 +93,7 @@ def findAll:List[(Album,Artist)] =
   /**
    * last album year
    */
-  def lastAlbumYear: Int = {
+  def lastAlbumYear = {
     SQL("select max(a.releaseDate) from Album a").apply().head match {
       case Row(date:Date) => formatYear.format(date).toInt
       case _ => formatYear.format(new Date()).toInt
@@ -103,7 +103,7 @@ def findAll:List[(Album,Artist)] =
   /**
    * find albums by genre and year
    */
-  def findByGenreAndYear(genre: String, year: String):List[(Album,Artist)] = {
+  def findByGenreAndYear(genre: String, year: String) = {
 
     val albums = SQL(
        """
@@ -122,7 +122,7 @@ def findAll:List[(Album,Artist)] =
   /**
   * filter by year
   */
-  def filterByYear (albums:List[(Album,Artist)], year:String):List[(Album,Artist)] = {
+  def filterByYear (albums:List[(Album,Artist)], year:String) = {
 	  albums.filter(x => formatYear.format(x._1.releaseDate).equals(year))
   }
 
@@ -131,7 +131,7 @@ def findAll:List[(Album,Artist)] =
 //Query object for artists
 object Artist extends Magic[Artist] {
 
-  def findOrCreate(artistName:String):Long= {
+  def findOrCreate(artistName:String): Long = {
       find("name = {n}").on("n"->artistName).first() match{
         case Some(a:Artist) => a.id.apply()
         case None => {
